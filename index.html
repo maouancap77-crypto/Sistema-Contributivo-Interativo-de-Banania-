@@ -91,6 +91,16 @@
             transform: scale(1.15) rotate(var(--r));
             opacity: 1;
         }
+        /* Intensificar brilho e visibilidade */
+        @keyframes strongGlow {
+            0% { filter: drop-shadow(0 0 0 rgba(255,210,63,0)); transform: scale(1) rotate(var(--r)); }
+            50% { filter: drop-shadow(0 6px 12px rgba(255,210,63,0.85)) blur(1px); transform: scale(1.22) rotate(var(--r)); }
+            100% { filter: drop-shadow(0 0 0 rgba(255,210,63,0)); transform: scale(1) rotate(var(--r)); }
+        }
+        .banana-glow.strong {
+            animation: strongGlow 1.2s ease-in-out forwards;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="h-full tropical-bg bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -118,7 +128,7 @@
                         <span class="block text-xs">Ciudadano #42069</span>
                     </div>
                     <div class="text-sm text-primary font-bold">
-                        <span class="block">🍌 2.350 Bananas</span>
+                        <span id="userBananaBalance" class="block">🍌 2.350 Bananas</span>
                         <span class="text-xs text-gray-500">créditos do povo</span>
                     </div>
                 </div>
@@ -285,13 +295,16 @@
                 <div class="glass rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saldo Atual</h3>
                     <div class="text-center py-8">
-                        <p class="text-4xl font-bold text-primary mb-2">R$ 2.350,00</p>
+                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">R$ 2.350,00</p>
                         <p class="text-gray-600 dark:text-gray-400">Créditos disponíveis</p>
                         <div class="mt-4 space-x-4">
-                            <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                            <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
                                 <i class="fas fa-plus mr-2"></i>Adicionar
                             </button>
-                            <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                            <button onclick="openWithdrawModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                <i class="fas fa-wallet mr-2"></i>Sacar
+                            </button>
+                            <button onclick="openHistoryModal()" class="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg">
                                 <i class="fas fa-history mr-2"></i>Histórico
                             </button>
                         </div>
@@ -301,28 +314,8 @@
                 <!-- Transaction History -->
                 <div class="glass rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Últimas Transações</h3>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">Apoio - Nova Ponte</p>
-                                <p class="text-xs text-gray-500">10/03/2024 14:30</p>
-                            </div>
-                            <span class="text-red-500 font-semibold">-R$ 500,00</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">Recarga Mensal</p>
-                                <p class="text-xs text-gray-500">01/03/2024 09:00</p>
-                            </div>
-                            <span class="text-green-500 font-semibold">+R$ 1.200,00</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm font-medium text-gray-900 dark:text-white">Apoio - Praça Central</p>
-                                <p class="text-xs text-gray-500">25/02/2024 16:45</p>
-                            </div>
-                            <span class="text-red-500 font-semibold">-R$ 300,00</span>
-                        </div>
+                    <div id="transactionsList" class="space-y-4">
+                        <!-- preenchido via JS com histórico persistente -->
                     </div>
                 </div>
             </div>
@@ -388,6 +381,70 @@
                 </div>
             </div>
         </div>
+    
+                <!-- Add / Withdraw Modals -->
+                <div id="addModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Adicionar Bananas</h3>
+                                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
+                                    <input id="addAmountInput" type="text" inputmode="numeric" value="100" class="w-full px-3 py-2 border rounded-md" />
+                                    <input id="addAmountRange" type="range" min="1" max="5000" value="100" class="w-full mt-2" />
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="closeAddModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
+                                    <button onclick="confirmAdd()" class="px-4 py-2 bg-green-500 text-white rounded">Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="withdrawModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sacar Bananas</h3>
+                                <button onclick="closeWithdrawModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
+                                    <input id="withdrawAmountInput" type="text" inputmode="numeric" value="50" class="w-full px-3 py-2 border rounded-md" />
+                                    <input id="withdrawAmountRange" type="range" min="1" max="5000" value="50" class="w-full mt-2" />
+                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: R$ 2.350,00</p>
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="closeWithdrawModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
+                                    <button onclick="confirmWithdraw()" class="px-4 py-2 bg-blue-500 text-white rounded">Sacar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History Modal (detalhe) - opcional pequena view -->
+                <div id="historyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Histórico de Transações</h3>
+                                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div id="historyList" class="space-y-2 max-h-64 overflow-auto text-sm text-gray-700 dark:text-gray-300">
+                                <!-- preenchido por JS -->
+                            </div>
+                            <div class="mt-4 text-right">
+                                <button onclick="closeHistoryModal()" class="px-4 py-2 bg-primary text-white rounded">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
     </div>
 
     <script>
@@ -645,7 +702,8 @@
             
             const modal = document.getElementById('voteModal');
             const content = document.getElementById('voteContent');
-            
+            const bal = getBalance();
+
             content.innerHTML = `
                 <div class="mb-4">
                     <h4 class="font-semibold text-gray-900 dark:text-white">${project.title}</h4>
@@ -655,11 +713,12 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: R$ ${project.budget.toLocaleString()}</p>
                     <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: R$ ${project.raised.toLocaleString()}</p>
                 </div>
-                <form onsubmit="submitVote(event, ${projectId})">
+                <form id="voteForm" onsubmit="submitVote(event, ${projectId})">
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor do Apoio (R$)</label>
-                        <input type="number" id="voteAmount" min="10" max="2350" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required>
-                        <p class="text-xs text-gray-500 mt-1">Saldo disponível: R$ 2.350,00</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor do Apoio (Bananas)</label>
+                        <input type="text" inputmode="numeric" id="voteAmount" min="1" max="${bal}" value="${(1).toLocaleString('pt-BR')}" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required>
+                        <input id="voteAmountRange" type="range" min="1" max="${bal}" value="1" class="w-full mt-2" />
+                        <p id="voteBalanceHint" class="text-xs text-gray-500 mt-1">Saldo disponível: ${formatCurrencyBR(bal)}</p>
                     </div>
                     <div class="flex justify-end space-x-3">
                         <button type="button" onclick="hideVoteModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancelar</button>
@@ -667,6 +726,18 @@
                     </div>
                 </form>
             `;
+
+            // wire slider <-> input
+            setTimeout(() => {
+                wireRangeInput('voteAmount','voteAmountRange');
+                // ensure max matches current balance
+                const range = document.getElementById('voteAmountRange');
+                const input = document.getElementById('voteAmount');
+                if (range && input) {
+                    range.max = String(bal);
+                    input.max = String(bal);
+                }
+            }, 50);
             
             modal.classList.remove('hidden');
         }
@@ -678,21 +749,36 @@
         function submitVote(event, projectId) {
             event.preventDefault();
             
-            const amount = parseInt(document.getElementById('voteAmount').value);
+            const amount = parseInputNumber(document.getElementById('voteAmount').value);
             const project = projects.find(p => p.id === projectId);
-            
-            if (project) {
-                project.raised += amount;
-                project.votes += 1;
-                
-                if (project.raised >= project.budget) {
-                    project.status = 'selecting-provider';
-                }
-                
-                renderProjects();
-                hideVoteModal();
-                showSuccessMessage(`Apoio de R$ ${amount.toLocaleString()} confirmado!`);
+            if (!project) return;
+
+            if (!Number.isInteger(amount) || amount <= 0) {
+                alert('Valor inválido para apoio.');
+                return;
             }
+
+            const bal = getBalance();
+            if (amount > bal) {
+                alert('Saldo insuficiente para apoiar este projeto.');
+                return;
+            }
+
+            // debita do saldo do usuário
+            setBalance(bal - amount);
+
+            // aplica ao projeto
+            project.raised += amount;
+            project.votes += 1;
+
+            if (project.raised >= project.budget) {
+                project.status = 'selecting-provider';
+            }
+
+            renderProjects();
+            hideVoteModal();
+            showSuccessMessage(`Apoio de ${amount.toLocaleString()} bananas confirmado!`);
+            saveTransaction({ title: `Apoio - ${project.title}`, amount: -amount, date: new Date().toLocaleString(), note: `Investido no projeto` });
         }
 
         function showRegisterProvider() {
@@ -718,6 +804,185 @@
                 successModal.remove();
             }, 3000);
         }
+
+        /* WALLET / SALDO: gerenciamento local usando localStorage */
+        const BALANCE_KEY = 'banania_user_balance';
+
+        function getBalance() {
+            const raw = localStorage.getItem(BALANCE_KEY);
+            if (!raw) return 2350; // valor inicial padrão
+            const n = parseInt(raw, 10);
+            return Number.isNaN(n) ? 0 : n;
+        }
+
+        function setBalance(newAmount) {
+            const n = Math.max(0, Math.floor(newAmount));
+            localStorage.setItem(BALANCE_KEY, String(n));
+            updateBalanceUI();
+        }
+
+        function formatCurrencyBR(value) {
+            return 'R$ ' + value.toLocaleString('pt-BR');
+        }
+
+        function updateBalanceUI() {
+            const bal = getBalance();
+            const header = document.getElementById('userBananaBalance');
+            const walletVal = document.getElementById('walletBalanceValue');
+            if (header) header.textContent = `🍌 ${bal.toLocaleString()} Bananas`;
+            if (walletVal) walletVal.textContent = formatCurrencyBR(bal);
+        }
+
+        function addBananasPrompt() {
+            const input = prompt('Quantas bananas deseja adicionar ao saldo? (número inteiro)');
+            if (input === null) return; // cancelado
+            const v = parseInt(input.replace(/[^0-9]/g, ''), 10);
+            if (!v || v <= 0) { alert('Entrada inválida. Insira um número inteiro positivo.'); return; }
+            const newBal = getBalance() + v;
+            setBalance(newBal);
+            showSuccessMessage(`Adicionado ${v.toLocaleString()} bananas ao saldo!`);
+        }
+
+        function withdrawBananasPrompt() {
+            const input = prompt('Quantas bananas deseja sacar do saldo? (número inteiro)');
+            if (input === null) return; // cancelado
+            const v = parseInt(input.replace(/[^0-9]/g, ''), 10);
+            if (!v || v <= 0) { alert('Entrada inválida. Insira um número inteiro positivo.'); return; }
+            const bal = getBalance();
+            if (v > bal) { alert('Saldo insuficiente para saque.'); return; }
+            setBalance(bal - v);
+            showSuccessMessage(`Saque de ${v.toLocaleString()} bananas realizado.`);
+        }
+
+        // Transaction history persistence
+        const TRANSACTIONS_KEY = 'banania_transactions';
+
+        function getTransactions() {
+            const raw = localStorage.getItem(TRANSACTIONS_KEY);
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch (e) { return []; }
+        }
+
+        function saveTransaction(tx) {
+            const arr = getTransactions();
+            arr.unshift(tx); // mais recente primeiro
+            // keep max 200 entries
+            const sliced = arr.slice(0, 200);
+            localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(sliced));
+            renderTransactions();
+        }
+
+        function renderTransactions() {
+            const list = document.getElementById('transactionsList');
+            const modalList = document.getElementById('historyList');
+            const txs = getTransactions();
+            if (list) {
+                list.innerHTML = '';
+                if (!txs.length) {
+                    list.innerHTML = '<p class="text-sm text-gray-500">Nenhuma transação ainda.</p>';
+                } else {
+                    txs.slice(0,5).forEach(tx => {
+                        const el = document.createElement('div');
+                        el.className = 'flex justify-between items-center';
+                        el.innerHTML = `<div><p class="text-sm font-medium text-gray-900 dark:text-white">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div><span class="font-semibold ${tx.amount<0? 'text-red-500':'text-green-500'}">${tx.amount<0? '-': '+'}${formatCurrencyBR(Math.abs(tx.amount))}</span>`;
+                        list.appendChild(el);
+                    });
+                }
+            }
+            if (modalList) {
+                modalList.innerHTML = '';
+                if (!txs.length) {
+                    modalList.innerHTML = '<p class="text-sm text-gray-500">Nenhuma transação ainda.</p>';
+                } else {
+                    txs.forEach(tx => {
+                        const row = document.createElement('div');
+                        row.className = 'flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700';
+                        row.innerHTML = `<div><p class="font-medium">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div><div class="text-right"><p class="font-semibold ${tx.amount<0? 'text-red-500':'text-green-500'}">${tx.amount<0? '-': '+'}${formatCurrencyBR(Math.abs(tx.amount))}</p><p class="text-xs text-gray-400">${tx.note || ''}</p></div>`;
+                        modalList.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        // Modals: open/close and confirm actions
+        function openAddModal() {
+            const defaultVal = 100;
+            document.getElementById('addAmountInput').value = formatInputNumber(defaultVal);
+            document.getElementById('addAmountRange').value = String(defaultVal);
+            document.getElementById('addAmountRange').max = '5000';
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+        function closeAddModal(){ document.getElementById('addModal').classList.add('hidden'); }
+        function openWithdrawModal(){
+            const bal = getBalance();
+            const hint = document.getElementById('withdrawHint');
+            const start = Math.min(50, bal);
+            document.getElementById('withdrawAmountInput').value = formatInputNumber(start);
+            document.getElementById('withdrawAmountRange').max = Math.max(1, bal);
+            document.getElementById('withdrawAmountRange').value = String(start);
+            if (hint) hint.textContent = `Saldo disponível: ${formatCurrencyBR(bal)}`;
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+        function closeWithdrawModal(){ document.getElementById('withdrawModal').classList.add('hidden'); }
+        function openHistoryModal(){ renderTransactions(); document.getElementById('historyModal').classList.remove('hidden'); }
+        function closeHistoryModal(){ document.getElementById('historyModal').classList.add('hidden'); }
+
+        function confirmAdd(){
+            const v = parseInputNumber(document.getElementById('addAmountInput').value) || 0;
+            if (v <= 0) { alert('Informe um valor maior que zero.'); return; }
+            const bal = getBalance();
+            setBalance(bal + v);
+            saveTransaction({ title: 'Recarga', amount: v, date: new Date().toLocaleString(), note: 'Recarga manual' });
+            closeAddModal();
+            showSuccessMessage(`Adicionado ${v.toLocaleString()} bananas.`);
+        }
+
+        function confirmWithdraw(){
+            const v = parseInputNumber(document.getElementById('withdrawAmountInput').value) || 0;
+            const bal = getBalance();
+            if (v <= 0) { alert('Informe um valor maior que zero.'); return; }
+            if (v > bal) { alert('Saldo insuficiente.'); return; }
+            setBalance(bal - v);
+            saveTransaction({ title: 'Saque', amount: -v, date: new Date().toLocaleString(), note: 'Saque manual' });
+            closeWithdrawModal();
+            showSuccessMessage(`Saque de ${v.toLocaleString()} bananas realizado.`);
+        }
+
+        // sincronização sliders <-> inputs
+        function wireRangeInput(numId, rangeId) {
+            const num = document.getElementById(numId);
+            const range = document.getElementById(rangeId);
+            if (!num || !range) return;
+            // when user types into the formatted text input, parse numeric and update range
+            num.addEventListener('input', () => { 
+                const v = parseInputNumber(num.value);
+                if (!isNaN(v)) range.value = Math.max(range.min, Math.min(range.max, v));
+                num.value = formatInputNumber(parseInt(range.value,10));
+            });
+            range.addEventListener('input', () => { num.value = formatInputNumber(parseInt(range.value,10)); });
+        }
+
+        function parseInputNumber(str) {
+            if (typeof str !== 'string') return NaN;
+            const only = str.replace(/[^0-9-]/g, '');
+            const n = parseInt(only, 10);
+            return Number.isNaN(n) ? NaN : n;
+        }
+
+        function formatInputNumber(n) {
+            if (n === null || n === undefined || Number.isNaN(n)) return '';
+            return n.toLocaleString('pt-BR');
+        }
+
+        // hook sliders
+        document.addEventListener('DOMContentLoaded', function(){
+            wireRangeInput('addAmountInput','addAmountRange');
+            wireRangeInput('withdrawAmountInput','withdrawAmountRange');
+
+            // Vote modal slider wiring will be done when vote modal is opened (because max varies)
+
+            renderTransactions();
+        });
 
         // El Presidente Messages System
         const presidentMessages = [
@@ -804,13 +1069,18 @@
                 const el = bananas[idx];
                 if (!el) continue;
 
-                // animação de brilho: adiciona classe e remove depois de um tempo
+                // animação de brilho: adiciona classes e remove depois de um tempo
                 el.classList.add('banana-glow');
+                // ocasionalmente, aplique o efeito mais forte
+                if (Math.random() < 0.35) el.classList.add('strong');
 
-                // variação de duração e atraso
-                const hold = 1200 + Math.random() * 1400;
+                // variação de duração
+                const hold = 900 + Math.random() * 1600;
+                el.style.opacity = 1;
                 setTimeout(() => {
                     el.classList.remove('banana-glow');
+                    el.classList.remove('strong');
+                    el.style.opacity = 0.8 + Math.random() * 0.2;
                 }, hold);
             }
         }
@@ -819,6 +1089,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderProjects();
             renderProviders();
+
+            // atualizar display de saldo
+            updateBalanceUI();
 
             // seed bananas and start interval
             createBananaElements(20);
