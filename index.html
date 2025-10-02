@@ -174,7 +174,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Bananas del Pueblo</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">2.350</p>
+                            <p id="plazaBananasCount" class="text-2xl font-bold text-gray-900 dark:text-white">2.350</p>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Proyectos Apoyados</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">7</p>
+                            <p id="plazaProjectsSupported" class="text-2xl font-bold text-gray-900 dark:text-white">7</p>
                         </div>
                     </div>
                 </div>
@@ -919,6 +919,10 @@
             renderProjects();
             hideVoteModal();
             showSuccessMessage(`Apoio de ${amount.toLocaleString()} bananas confirmado!`);
+            // award patriotic points for supporting a project
+            setPatrioticPoints(getPatrioticPoints() + 10);
+            // update plaza stats now
+            updatePlazaStatsFromState();
             saveTransaction({ title: `Apoio - ${project.title}`, amount: -amount, date: new Date().toLocaleString(), note: `Investido no projeto` });
         }
 
@@ -972,6 +976,9 @@
             const walletVal = document.getElementById('walletBalanceValue');
             if (header) header.textContent = `🍌 ${bal.toLocaleString()} Bananas`;
             if (walletVal) walletVal.textContent = formatCurrencyBR(bal);
+            // also reflect on plaza bananas count
+            const plazaEl = document.getElementById('plazaBananasCount');
+            if (plazaEl) plazaEl.textContent = bal.toLocaleString();
         }
 
         function addBananasPrompt() {
@@ -1011,6 +1018,43 @@
             const sliced = arr.slice(0, 200);
             localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(sliced));
             renderTransactions();
+            // any transaction affects plaza recent activity and may award patriotic points
+            // reward small points for actions: +5 for recarga, +10 for apoio, +2 for saque
+            if (tx.title && typeof tx.amount === 'number') {
+                let pts = 0;
+                if (/recarga/i.test(tx.title)) pts = 5;
+                if (/apoio/i.test(tx.title)) pts = 10;
+                if (/saque/i.test(tx.title)) pts = 2;
+                if (pts > 0) {
+                    setPatrioticPoints(getPatrioticPoints() + pts);
+                }
+                // update plaza projects supported/bananas
+                updatePlazaStatsFromState();
+            }
+        }
+
+        function updatePlazaStatsFromState() {
+            // plaza bananas reflect total balance
+            const bal = getBalance();
+            const plazaEl = document.getElementById('plazaBananasCount');
+            if (plazaEl) plazaEl.textContent = bal.toLocaleString();
+
+            // count supported projects as those with raised > 0 across all projects
+            const supported = getAllProjects().filter(p => p.raised && p.raised > 0).length;
+            const supEl = document.getElementById('plazaProjectsSupported');
+            if (supEl) supEl.textContent = supported;
+
+            // update recent activity area from transactions
+            const recent = getTransactions().slice(0,5);
+            const recentContainer = document.querySelector('#dashboard .glass .space-y-4');
+            if (recentContainer) {
+                // build a small activity list
+                recentContainer.innerHTML = recent.map(tx => {
+                    const sign = tx.amount < 0 ? '-' : '+';
+                    const cls = tx.amount < 0 ? 'text-red-500' : 'text-green-500';
+                    return `<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4"><div class="flex items-center"><div class="w-2 h-2 ${tx.amount>=0? 'bg-green-500':'bg-blue-500'} rounded-full mr-3"></div><div><p class="text-sm font-medium text-gray-900 dark:text-white">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div></div><span class="${cls} text-sm">${sign}${formatCurrencyBR(Math.abs(tx.amount))}</span></div>`;
+                }).join('');
+            }
         }
 
         function renderTransactions() {
@@ -1076,6 +1120,8 @@
             saveTransaction({ title: 'Recarga', amount: v, date: new Date().toLocaleString(), note: 'Recarga manual' });
             closeAddModal();
             showSuccessMessage(`Adicionado ${v.toLocaleString()} bananas.`);
+            // Update plaza stats immediately
+            updatePlazaStatsFromState();
         }
 
         function confirmWithdraw(){
@@ -1087,6 +1133,7 @@
             saveTransaction({ title: 'Saque', amount: -v, date: new Date().toLocaleString(), note: 'Saque manual' });
             closeWithdrawModal();
             showSuccessMessage(`Saque de ${v.toLocaleString()} bananas realizado.`);
+            updatePlazaStatsFromState();
         }
 
         // sincronização sliders <-> inputs
@@ -1156,18 +1203,18 @@
                 // Fade in
                 messageElement.style.opacity = '1';
                 
-                // Schedule fade out
+                // Schedule fade out (keep message visible longer)
                 setTimeout(() => {
                     messageElement.style.opacity = '0';
-                }, 4000);
+                }, 8000);
                 
             }, 500);
         }
 
-        // Start president messages after 2 seconds, then every 8 seconds
+        // Start president messages after 2 seconds, then every 12 seconds
         setTimeout(() => {
             showPresidentMessage();
-            setInterval(showPresidentMessage, 8000);
+            setInterval(showPresidentMessage, 12000);
         }, 2000);
 
         /* BANANA BACKGROUND: cria bananas espalhadas e faz algumas brilharem periodicamente */
