@@ -290,38 +290,7 @@
             </div>
         </div>
 
-        <!-- Suggestions Section (moved to Projects UI) -->
-        <!-- (Removed separate Military section: military projects are rendered within the main Projects grid) -->
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
-                            <input id="suggestionTitle" class="w-full px-3 py-2 border rounded-md" required />
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
-                            <textarea id="suggestionDesc" rows="3" class="w-full px-3 py-2 border rounded-md" required></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
-                            <select id="suggestionCategory" class="w-full px-3 py-2 border rounded-md">
-                                <option value="infraestrutura">Infraestrutura</option>
-                                <option value="saude">Saúde</option>
-                                <option value="educacao">Educação</option>
-                                <option value="meio-ambiente">Meio Ambiente</option>
-                                <option value="militar">Militar</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex justify-end mt-4">
-                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded">Enviar Sugestão</button>
-                    </div>
-                </form>
-            </div>
-
-            <div id="suggestionsList" class="space-y-4">
-                <!-- sugeridos aparecerão aqui -->
-            </div>
-        </div>
+        <!-- Suggestions form removed from global area — suggestions are handled within Projects section only -->
 
         <!-- Wallet Section -->
         <div id="wallet" class="section hidden">
@@ -386,7 +355,6 @@
                                 <option value="saude">Saúde</option>
                                 <option value="educacao">Educação</option>
                                 <option value="meio-ambiente">Meio Ambiente</option>
-                                <option value="militar">Militar</option>
                             </select>
                         </div>
                         <div>
