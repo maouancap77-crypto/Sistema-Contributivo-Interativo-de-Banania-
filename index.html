@@ -51,24 +51,49 @@
         }
         .banana-glow {
             font-size: 2rem;
-            animation: glow 1.5s infinite alternate;
+            animation: glow 1.6s ease-in-out;
             display: inline-block;
             margin: 0 5px;
         }
+        /* Fundo tropical personalizado */
+        .tropical-bg {
+            background: linear-gradient(135deg, #18df43 0%, #00B4D8 100%);
+            background-attachment: fixed;
+        }
+        .dark .tropical-bg {
+            background: linear-gradient(135deg, #04493a 0%, #013a31 100%);
+        }
+
+        /* Container de bananas espalhadas no fundo */
         .banana-container {
-            position: absolute;
-            top: 0;
-            left: 0;
+            position: fixed;
+            inset: 0;
             width: 100%;
-            display: flex;
-            justify-content: space-around;
+            height: 100%;
             pointer-events: none; /* Para não interferir em cliques */
-            z-index: 0; /* Para ficar atrás do conteúdo principal */
-            opacity: 0.15; /* Deixa transparente o suficiente para ser fundo */
+            z-index: 0; /* Fica atrás do conteúdo que tem z-index maior */
+            opacity: 0.18; /* Leve transparência para não competir com o conteúdo */
+            overflow: hidden;
+        }
+
+        .banana {
+            position: absolute;
+            font-size: 2rem;
+            will-change: transform, opacity, filter;
+            filter: drop-shadow(0 2px 2px rgba(0,0,0,0.15));
+            transition: transform 400ms ease, opacity 400ms ease;
+            opacity: 0.9;
+        }
+
+        /* Classe aplicada temporariamente para o brilho */
+        .banana-glow {
+            animation: glow 1.6s ease-in-out forwards;
+            transform: scale(1.15) rotate(var(--r));
+            opacity: 1;
         }
     </style>
 </head>
-<body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+<body class="h-full tropical-bg bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Navigation -->
     <nav class="glass sticky top-0 z-50 border-b">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -102,7 +127,10 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    <!-- Banana decor layer -->
+    <div class="banana-container" aria-hidden="true"></div>
+
+    <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 relative" style="z-index:10;">
         <!-- Dashboard Section -->
         <div id="dashboard" class="section">
             <!-- El Presidente Message Banner -->
@@ -736,10 +764,69 @@
             setInterval(showPresidentMessage, 8000);
         }, 2000);
 
+        /* BANANA BACKGROUND: cria bananas espalhadas e faz algumas brilharem periodicamente */
+        function createBananaElements(count = 18) {
+            const container = document.querySelector('.banana-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                const span = document.createElement('span');
+                span.className = 'banana';
+                span.textContent = '🍌';
+
+                // posição aleatória na viewport
+                const x = Math.random() * 100; // vw
+                const y = Math.random() * 100; // vh
+                const size = 14 + Math.random() * 26; // px font-size
+                const rotate = (Math.random() * 40 - 20) + 'deg';
+                const opacity = 0.5 + Math.random() * 0.6;
+
+                span.style.left = x + 'vw';
+                span.style.top = y + 'vh';
+                span.style.fontSize = size + 'px';
+                span.style.opacity = opacity;
+                span.style.transform = `rotate(${rotate})`;
+                span.style.setProperty('--r', rotate);
+
+                container.appendChild(span);
+            }
+        }
+
+        function triggerRandomBananaGlow() {
+            const bananas = Array.from(document.querySelectorAll('.banana-container .banana'));
+            if (!bananas.length) return;
+
+            // escolha aleatória de 1 a 3 bananas para brilhar
+            const toGlow = Math.max(1, Math.floor(Math.random() * 3));
+            for (let i = 0; i < toGlow; i++) {
+                const idx = Math.floor(Math.random() * bananas.length);
+                const el = bananas[idx];
+                if (!el) continue;
+
+                // animação de brilho: adiciona classe e remove depois de um tempo
+                el.classList.add('banana-glow');
+
+                // variação de duração e atraso
+                const hold = 1200 + Math.random() * 1400;
+                setTimeout(() => {
+                    el.classList.remove('banana-glow');
+                }, hold);
+            }
+        }
+
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
             renderProjects();
             renderProviders();
+
+            // seed bananas and start interval
+            createBananaElements(20);
+
+            // trigga frames at random intervals between 1.5s and 4.5s
+            setInterval(() => {
+                triggerRandomBananaGlow();
+            }, 1500 + Math.random() * 3000);
         });
     </script>
 </body>
