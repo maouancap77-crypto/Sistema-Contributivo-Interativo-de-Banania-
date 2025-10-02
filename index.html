@@ -117,6 +117,8 @@
                         <div class="flex items-baseline space-x-4">
                             <button onclick="showSection('dashboard')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏖️ Plaza Central</button>
                             <button onclick="showSection('projects')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏗️ Proyectos</button>
+                            <button onclick="showMilitaryProjects()" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🪖 Militares</button>
+                            <button onclick="openSuggestions()" id="suggestionsNavBtn" class="nav-btn text-gray-400 dark:text-gray-500 px-3 py-2 rounded-md text-sm font-medium">💡 Sugestões</button>
                             <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
                             <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
                         </div>
@@ -192,7 +194,7 @@
                         </div>
                         <div class="ml-4">
                             <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Puntos Patrióticos</p>
-                            <p class="text-2xl font-bold text-gray-900 dark:text-white">1,245</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white patrioticPoints">1,245</p>
                         </div>
                     </div>
                 </div>
@@ -252,11 +254,12 @@
 
             <!-- Category Filter -->
             <div class="flex flex-wrap gap-2 mb-6">
-                <button onclick="filterProjects('all')" class="filter-btn bg-primary text-white px-4 py-2 rounded-full text-sm">🌴 Todos</button>
-                <button onclick="filterProjects('infraestrutura')" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌉 Infraestructura</button>
-                <button onclick="filterProjects('saude')" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🏥 Salud</button>
-                <button onclick="filterProjects('educacao')" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🎭 Cultura</button>
-                <button onclick="filterProjects('meio-ambiente')" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌺 Ecología</button>
+                <button onclick="filterProjects('all', this)" class="filter-btn bg-primary text-white px-4 py-2 rounded-full text-sm">🌴 Todos</button>
+                <button onclick="filterProjects('infraestrutura', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌉 Infraestructura</button>
+                <button onclick="filterProjects('saude', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🏥 Salud</button>
+                <button onclick="filterProjects('educacao', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🎭 Cultura</button>
+                <button onclick="filterProjects('meio-ambiente', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌺 Ecología</button>
+                <button onclick="filterProjects('militar', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🪖 Militares</button>
             </div>
 
             <!-- Projects Grid -->
@@ -280,6 +283,59 @@
             <!-- Providers Grid -->
             <div id="providers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Provider cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Military Projects Section -->
+        <div id="military" class="section hidden">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">🪖 Proyectos Militares</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Projetos de defesa e infraestrutura estratégica da república.</p>
+                </div>
+            </div>
+            <div id="military-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- military project cards populated by JS -->
+            </div>
+        </div>
+
+        <!-- Suggestions Section (desbloqueada por pontos) -->
+        <div id="suggestions" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">💡 Sugestões de Projetos</h2>
+                <p class="text-gray-600 dark:text-gray-400">Envie uma ideia — desbloqueado a partir de <span id="suggestionsRequired">0</span> pontos patrióticos.</p>
+            </div>
+
+            <div class="glass rounded-lg p-6 mb-6">
+                <form id="suggestionForm" onsubmit="submitSuggestion(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+                            <input id="suggestionTitle" class="w-full px-3 py-2 border rounded-md" required />
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
+                            <textarea id="suggestionDesc" rows="3" class="w-full px-3 py-2 border rounded-md" required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
+                            <select id="suggestionCategory" class="w-full px-3 py-2 border rounded-md">
+                                <option value="infraestrutura">Infraestrutura</option>
+                                <option value="saude">Saúde</option>
+                                <option value="educacao">Educação</option>
+                                <option value="meio-ambiente">Meio Ambiente</option>
+                                <option value="militar">Militar</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="submit" class="px-4 py-2 bg-primary text-white rounded">Enviar Sugestão</button>
+                    </div>
+                </form>
+            </div>
+
+            <div id="suggestionsList" class="space-y-4">
+                <!-- sugeridos aparecerão aqui -->
             </div>
         </div>
 
@@ -381,7 +437,8 @@
                 </div>
             </div>
         </div>
-    
+        </div>
+
                 <!-- Add / Withdraw Modals -->
                 <div id="addModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
                     <div class="flex items-center justify-center min-h-screen p-4">
@@ -554,6 +611,58 @@
             }
         ];
 
+        // Patriotic points (persistente)
+        const POINTS_KEY = 'banania_patriotic_points';
+        function getPatrioticPoints() {
+            const raw = localStorage.getItem(POINTS_KEY);
+            if (!raw) return 1245; // valor inicial mostrado no card
+            const n = parseInt(raw,10);
+            return Number.isNaN(n) ? 0 : n;
+        }
+        function setPatrioticPoints(n){ localStorage.setItem(POINTS_KEY, String(Math.max(0, Math.floor(n)))); updatePatrioticUI(); }
+        function updatePatrioticUI(){
+            const points = getPatrioticPoints();
+            // atualizar qualquer elemento que mostre pontos (se existir)
+            document.querySelectorAll('.patrioticPoints').forEach(el => el.textContent = points.toLocaleString());
+            // update suggestion requirement display
+            const req = document.getElementById('suggestionsRequired');
+            if (req) req.textContent = SUGGESTION_POINTS_REQUIRED;
+        }
+
+        const SUGGESTION_POINTS_REQUIRED = 1000; // pontos necessários para desbloquear sugestões
+
+        // Suggestions persistence
+        const SUGGESTIONS_KEY = 'banania_suggestions';
+        function getSuggestions(){ const raw = localStorage.getItem(SUGGESTIONS_KEY); if(!raw) return []; try{return JSON.parse(raw);}catch(e){return [];} }
+        function saveSuggestion(s){ const arr = getSuggestions(); arr.unshift(s); localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(arr)); renderSuggestions(); }
+        function renderSuggestions(){ const list = document.getElementById('suggestionsList'); const arr = getSuggestions(); if(!list) return; list.innerHTML = ''; if(!arr.length) { list.innerHTML = '<p class="text-sm text-gray-500">Nenhuma sugestão enviada ainda.</p>'; return;} arr.forEach(s => { const el = document.createElement('div'); el.className = 'glass rounded-lg p-4'; el.innerHTML = `<h4 class="font-semibold">${s.title} <span class="text-xs text-gray-500">(${s.category})</span></h4><p class="text-sm text-gray-600">${s.description}</p><p class="text-xs text-gray-400 mt-2">Enviada: ${s.date}</p>`; list.appendChild(el); }); }
+
+        function openSuggestions(){
+            // só abre se usuário tiver pontos suficientes
+            if (getPatrioticPoints() < SUGGESTION_POINTS_REQUIRED) {
+                const btn = document.getElementById('suggestionsNavBtn');
+                if (btn) {
+                    btn.classList.add('text-gray-400');
+                    alert(`Você precisa de pelo menos ${SUGGESTION_POINTS_REQUIRED} pontos patrióticos para enviar sugestões.`);
+                }
+                return;
+            }
+            showSection('suggestions');
+            renderSuggestions();
+        }
+
+        function submitSuggestion(e){ e.preventDefault(); const title = document.getElementById('suggestionTitle').value.trim(); const description = document.getElementById('suggestionDesc').value.trim(); const category = document.getElementById('suggestionCategory').value; if(!title||!description){ alert('Preencha título e descrição.'); return;} const s = { title, description, category, date: new Date().toLocaleString() }; saveSuggestion(s); showSuccessMessage('Sugestão enviada!'); document.getElementById('suggestionForm').reset(); }
+
+        // Military projects dataset and render
+        const militaryProjects = [
+            { id: 201, title: '🛡️ Fortificação Costeira', category: 'militar', description: 'Melhora das defesas costeiras e posicionamento de radares.', budget: 500000, raised: 120000, votes: 12, status: 'funding' },
+            { id: 202, title: '✈️ Base Aérea Regional', category: 'militar', description: 'Construção de pista e hangares para defesa aérea regional.', budget: 750000, raised: 300000, votes: 8, status: 'funding' }
+        ];
+
+        function renderMilitaryProjects(){ const grid = document.getElementById('military-grid'); if(!grid) return; grid.innerHTML=''; militaryProjects.forEach(p=>{ const card = document.createElement('div'); card.className='glass rounded-lg p-6'; card.innerHTML = `<div class="flex justify-between items-start mb-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white">${p.title}</h3><span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Militar</span></div><p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${p.description}</p><div class="mb-4"><div class="flex justify-between text-sm mb-1"><span class="text-gray-600 dark:text-gray-400">Arrecadado</span><span class="font-semibold text-gray-900 dark:text-white">R$ ${p.raised.toLocaleString()} / R$ ${p.budget.toLocaleString()}</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width:${(p.raised/p.budget)*100}%"></div></div></div><div class="flex justify-between items-center"><span class="text-sm text-gray-500"><i class="fas fa-users mr-1"></i>${p.votes} apoiadores</span><button onclick="openVoteModal(${p.id})" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm ${p.status!=='funding'? 'opacity-50 cursor-not-allowed' : ''}" ${p.status!=='funding'? 'disabled' : ''}><i class="fas fa-heart mr-1"></i>Apoiar</button></div>`; grid.appendChild(card); }); }
+
+        function showMilitaryProjects(){ showSection('military'); renderMilitaryProjects(); }
+
         // Navigation
         function showSection(sectionName) {
             document.querySelectorAll('.section').forEach(section => {
@@ -697,7 +806,8 @@
         }
 
         function openVoteModal(projectId) {
-            const project = projects.find(p => p.id === projectId);
+            let project = projects.find(p => p.id === projectId);
+            if (!project) project = militaryProjects.find(p => p.id === projectId);
             if (!project || project.status !== 'funding') return;
             
             const modal = document.getElementById('voteModal');
@@ -1092,6 +1202,11 @@
 
             // atualizar display de saldo
             updateBalanceUI();
+
+            // atualizar pontos patrióticos e sugestões/military
+            updatePatrioticUI();
+            renderSuggestions();
+            renderMilitaryProjects();
 
             // seed bananas and start interval
             createBananaElements(20);
