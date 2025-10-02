@@ -38,6 +38,34 @@
         .dark .gradient-bg {
             background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
         }
+
+        @keyframes glow {
+            0%, 100% { 
+                text-shadow: 0 0 5px #FFD23F, 0 0 10px #FFD23F;
+                opacity: 0.8;
+            }
+            50% { 
+                text-shadow: 0 0 10px #FFD23F, 0 0 20px #FFD23F, 0 0 30px #FFD23F;
+                opacity: 1;
+            }
+        }
+        .banana-glow {
+            font-size: 2rem;
+            animation: glow 1.5s infinite alternate;
+            display: inline-block;
+            margin: 0 5px;
+        }
+        .banana-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            pointer-events: none; /* Para não interferir em cliques */
+            z-index: 0; /* Para ficar atrás do conteúdo principal */
+            opacity: 0.15; /* Deixa transparente o suficiente para ser fundo */
+        }
     </style>
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
