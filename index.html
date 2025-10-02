@@ -708,7 +708,12 @@
         }
 
         // Projects functions
-        function renderProjects(projectsToRender = projects) {
+        function getAllProjects() {
+            // combine civilian projects with military ones so the main view shows everything
+            return (projects || []).concat(militaryProjects || []);
+        }
+
+        function renderProjects(projectsToRender = getAllProjects()) {
             const grid = document.getElementById('projects-grid');
             grid.innerHTML = '';
             
@@ -747,20 +752,22 @@
             });
         }
 
-        function filterProjects(category) {
+        function filterProjects(category, btn) {
             // Update filter buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-primary', 'text-white');
-                btn.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('bg-primary', 'text-white');
+                b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
             });
-            event.target.classList.add('bg-primary', 'text-white');
-            event.target.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            if (btn && btn.classList) {
+                btn.classList.add('bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            }
             
-            // Filter projects
+            // Filter projects (search across civilian + military)
             if (category === 'all') {
                 renderProjects();
             } else {
-                const filteredProjects = projects.filter(project => project.category === category);
+                const filteredProjects = getAllProjects().filter(project => project.category === category);
                 renderProjects(filteredProjects);
             }
         }
@@ -814,8 +821,9 @@
             const description = document.getElementById('projectDescription').value;
             const budget = parseInt(document.getElementById('projectBudget').value);
             
+            const maxId = Math.max(0, ...getAllProjects().map(p => p.id || 0));
             const newProject = {
-                id: projects.length + 1,
+                id: maxId + 1,
                 title,
                 category,
                 description,
@@ -889,7 +897,13 @@
             event.preventDefault();
             
             const amount = parseInputNumber(document.getElementById('voteAmount').value);
-            const project = projects.find(p => p.id === projectId);
+            // find project in civilian or military lists
+            let project = projects.find(p => p.id === projectId);
+            let projectList = 'civilian';
+            if (!project) {
+                project = militaryProjects.find(p => p.id === projectId);
+                projectList = 'military';
+            }
             if (!project) return;
 
             if (!Number.isInteger(amount) || amount <= 0) {
@@ -906,9 +920,18 @@
             // debita do saldo do usuário
             setBalance(bal - amount);
 
-            // aplica ao projeto
+            // aplica ao projeto (update in-place)
             project.raised += amount;
             project.votes += 1;
+
+            // if project came from militaryProjects ensure the original array item is updated (objects are by reference, but keep explicit)
+            if (projectList === 'military') {
+                const idx = militaryProjects.findIndex(p => p.id === projectId);
+                if (idx !== -1) militaryProjects[idx] = project;
+            } else {
+                const idx = projects.findIndex(p => p.id === projectId);
+                if (idx !== -1) projects[idx] = project;
+            }
 
             if (project.raised >= project.budget) {
                 project.status = 'selecting-provider';
