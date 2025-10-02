@@ -225,7 +225,7 @@
                             <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">Votou em "Nova Ponte Cidade"</p>
-                                <p class="text-xs text-gray-500">R$ 500,00 • 2 horas atrás</p>
+                                <p class="text-xs text-gray-500">B$ 500,00 • 2 horas atrás</p>
                             </div>
                         </div>
                         <span class="text-green-500 text-sm">+50 pontos</span>
@@ -304,7 +304,7 @@
                 <div class="glass rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saldo Atual</h3>
                     <div class="text-center py-8">
-                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">R$ 2.350,00</p>
+                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">B$ 2.350,00</p>
                         <p class="text-gray-600 dark:text-gray-400">Créditos disponíveis</p>
                         <div class="mt-4 space-x-4">
                             <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
@@ -428,7 +428,7 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
                                     <input id="withdrawAmountInput" type="text" inputmode="numeric" value="50" class="w-full px-3 py-2 border rounded-md" />
                                     <input id="withdrawAmountRange" type="range" min="1" max="5000" value="50" class="w-full mt-2" />
-                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: R$ 2.350,00</p>
+                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: B$ 2.350,00</p>
                                 </div>
                                 <div class="flex justify-end space-x-3">
                                     <button onclick="closeWithdrawModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
@@ -684,7 +684,7 @@
                     <div class="mb-4">
                         <div class="flex justify-between text-sm mb-1">
                             <span class="text-gray-600 dark:text-gray-400">Arrecadado</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">R$ ${project.raised.toLocaleString()} / R$ ${project.budget.toLocaleString()}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">B$ ${project.raised.toLocaleString()} / B$ ${project.budget.toLocaleString()}</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div class="bg-primary h-2 rounded-full" style="width: ${progressPercentage}%"></div>
@@ -806,8 +806,8 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${project.description}</p>
                 </div>
                 <div class="mb-4">
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: R$ ${project.budget.toLocaleString()}</p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: R$ ${project.raised.toLocaleString()}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: B$ ${project.budget.toLocaleString()}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: B$ ${project.raised.toLocaleString()}</p>
                 </div>
                 <form id="voteForm" onsubmit="submitVote(event, ${projectId})">
                     <div class="mb-4">
@@ -937,7 +937,7 @@
         }
 
         function formatCurrencyBR(value) {
-            return 'R$ ' + value.toLocaleString('pt-BR');
+            return 'B$ ' + value.toLocaleString('pt-BR');
         }
 
         function updateBalanceUI() {
