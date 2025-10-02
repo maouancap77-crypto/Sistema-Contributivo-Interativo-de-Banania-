@@ -1,4 +1,4 @@
-🌟 1 – Pitch Institucional
+🌟 1 – Pitch Construa Banania!
 Nome do Protótipo
 
 Tributo Vivo – Sistema Tributário Gamificado de Gestão Participativa
