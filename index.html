@@ -654,9 +654,38 @@
         function submitSuggestion(e){ e.preventDefault(); const title = document.getElementById('suggestionTitle').value.trim(); const description = document.getElementById('suggestionDesc').value.trim(); const category = document.getElementById('suggestionCategory').value; if(!title||!description){ alert('Preencha título e descrição.'); return;} const s = { title, description, category, date: new Date().toLocaleString() }; saveSuggestion(s); showSuccessMessage('Sugestão enviada!'); document.getElementById('suggestionForm').reset(); }
 
         // Military projects dataset and render
+        // ¡Proyectos Militares de El Presidente!
         const militaryProjects = [
-            { id: 201, title: '🛡️ Fortificação Costeira', category: 'militar', description: 'Melhora das defesas costeiras e posicionamento de radares.', budget: 500000, raised: 120000, votes: 12, status: 'funding' },
-            { id: 202, title: '✈️ Base Aérea Regional', category: 'militar', description: 'Construção de pista e hangares para defesa aérea regional.', budget: 750000, raised: 300000, votes: 8, status: 'funding' }
+            { 
+                id: 201, 
+                title: '🛡️ Fortificación Costera', 
+                category: 'militar', 
+                description: '¡Más cañones en la playa, más turistas asustados! También incluye radares para detectar cruceros enemigos... o cruceros llenos de gringos ricos.', 
+                budget: 500000, 
+                raised: 120000, 
+                votes: 12, 
+                status: 'funding' 
+            },
+            { 
+                id: 202, 
+                title: '✈️ Base Aérea Regional', 
+                category: 'militar', 
+                description: 'Una pista tan larga que hasta los aviones de los yanquis van a querer estacionar aquí. Hangares incluidos, porque dormir al aire libre es para campesinos, no para bombarderos.', 
+                budget: 750000, 
+                raised: 300000, 
+                votes: 8, 
+                status: 'funding' 
+            },
+            { 
+                id: 203, 
+                title: '🔫 Balas de Goma Democráticas™', 
+                category: 'militar', 
+                description: '¡Atención, ciudadanos! Esto no tiene nada que ver con las huelgas de la semana pasada (que por supuesto no existieron). El Presidente simplemente quiere municiones suaves para demostrar su lado... humano. ¡Ayude al señor El Presidente a conseguir estos nuevos juguetes!', 
+                budget: 50000, 
+                raised: 500, 
+                votes: 42, 
+                status: 'funding' 
+            }
         ];
 
         function renderMilitaryProjects(){ const grid = document.getElementById('military-grid'); if(!grid) return; grid.innerHTML=''; militaryProjects.forEach(p=>{ const card = document.createElement('div'); card.className='glass rounded-lg p-6'; card.innerHTML = `<div class="flex justify-between items-start mb-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white">${p.title}</h3><span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Militar</span></div><p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${p.description}</p><div class="mb-4"><div class="flex justify-between text-sm mb-1"><span class="text-gray-600 dark:text-gray-400">Arrecadado</span><span class="font-semibold text-gray-900 dark:text-white">R$ ${p.raised.toLocaleString()} / R$ ${p.budget.toLocaleString()}</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width:${(p.raised/p.budget)*100}%"></div></div></div><div class="flex justify-between items-center"><span class="text-sm text-gray-500"><i class="fas fa-users mr-1"></i>${p.votes} apoiadores</span><button onclick="openVoteModal(${p.id})" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm ${p.status!=='funding'? 'opacity-50 cursor-not-allowed' : ''}" ${p.status!=='funding'? 'disabled' : ''}><i class="fas fa-heart mr-1"></i>Apoiar</button></div>`; grid.appendChild(card); }); }
