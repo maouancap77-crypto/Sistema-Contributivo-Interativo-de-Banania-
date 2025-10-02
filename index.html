@@ -117,8 +117,14 @@
                         <div class="flex items-baseline space-x-4">
                             <button onclick="showSection('dashboard')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏖️ Plaza Central</button>
                             <button onclick="showSection('projects')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏗️ Proyectos</button>
-                            <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
-                            <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
+                                <!-- Header button commented per request: Militares (kept here commented so you can re-enable later)
+                                <button onclick="showMilitaryProjects()" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🪖 Militares</button>
+                                -->
+                                <!-- Header suggestions button commented (the suggestions form exists in Projects page)
+                                <button onclick="openSuggestions()" id="suggestionsNavBtn" class="nav-btn text-gray-400 dark:text-gray-500 px-3 py-2 rounded-md text-sm font-medium">💡 Sugestões</button>
+                                -->
+                                <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
+                                <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
                         </div>
                     </div>
                 </div>
