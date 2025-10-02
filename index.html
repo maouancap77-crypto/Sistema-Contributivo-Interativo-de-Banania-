@@ -57,7 +57,7 @@
         }
         /* Fundo tropical personalizado */
         .tropical-bg {
-            background: linear-gradient(135deg, #18df43 0%, #00B4D8 100%);
+            background: linear-gradient(135deg, #b8e9c3 0%, #00B4D8 100%);
             background-attachment: fixed;
         }
         .dark .tropical-bg {
@@ -117,8 +117,6 @@
                         <div class="flex items-baseline space-x-4">
                             <button onclick="showSection('dashboard')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏖️ Plaza Central</button>
                             <button onclick="showSection('projects')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏗️ Proyectos</button>
-                            <button onclick="showMilitaryProjects()" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🪖 Militares</button>
-                            <button onclick="openSuggestions()" id="suggestionsNavBtn" class="nav-btn text-gray-400 dark:text-gray-500 px-3 py-2 rounded-md text-sm font-medium">💡 Sugestões</button>
                             <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
                             <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
                         </div>
@@ -286,28 +284,8 @@
             </div>
         </div>
 
-        <!-- Military Projects Section -->
-        <div id="military" class="section hidden">
-            <div class="flex justify-between items-center mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">🪖 Proyectos Militares</h2>
-                    <p class="text-gray-600 dark:text-gray-400">Projetos de defesa e infraestrutura estratégica da república.</p>
-                </div>
-            </div>
-            <div id="military-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- military project cards populated by JS -->
-            </div>
-        </div>
-
-        <!-- Suggestions Section (desbloqueada por pontos) -->
-        <div id="suggestions" class="section hidden">
-            <div class="mb-8">
-                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">💡 Sugestões de Projetos</h2>
-                <p class="text-gray-600 dark:text-gray-400">Envie uma ideia — desbloqueado a partir de <span id="suggestionsRequired">0</span> pontos patrióticos.</p>
-            </div>
-
-            <div class="glass rounded-lg p-6 mb-6">
-                <form id="suggestionForm" onsubmit="submitSuggestion(event)">
+        <!-- Suggestions Section (moved to Projects UI) -->
+        <!-- (Removed separate Military section: military projects are rendered within the main Projects grid) -->
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
@@ -640,14 +618,11 @@
         function openSuggestions(){
             // só abre se usuário tiver pontos suficientes
             if (getPatrioticPoints() < SUGGESTION_POINTS_REQUIRED) {
-                const btn = document.getElementById('suggestionsNavBtn');
-                if (btn) {
-                    btn.classList.add('text-gray-400');
-                    alert(`Você precisa de pelo menos ${SUGGESTION_POINTS_REQUIRED} pontos patrióticos para enviar sugestões.`);
-                }
+                alert(`Você precisa de pelo menos ${SUGGESTION_POINTS_REQUIRED} pontos patrióticos para enviar sugestões.`);
                 return;
             }
-            showSection('suggestions');
+            // show the main projects area where suggestion form exists
+            showSection('projects');
             renderSuggestions();
         }
 
@@ -688,9 +663,7 @@
             }
         ];
 
-        function renderMilitaryProjects(){ const grid = document.getElementById('military-grid'); if(!grid) return; grid.innerHTML=''; militaryProjects.forEach(p=>{ const card = document.createElement('div'); card.className='glass rounded-lg p-6'; card.innerHTML = `<div class="flex justify-between items-start mb-4"><h3 class="text-lg font-semibold text-gray-900 dark:text-white">${p.title}</h3><span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">Militar</span></div><p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${p.description}</p><div class="mb-4"><div class="flex justify-between text-sm mb-1"><span class="text-gray-600 dark:text-gray-400">Arrecadado</span><span class="font-semibold text-gray-900 dark:text-white">R$ ${p.raised.toLocaleString()} / R$ ${p.budget.toLocaleString()}</span></div><div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2"><div class="bg-primary h-2 rounded-full" style="width:${(p.raised/p.budget)*100}%"></div></div></div><div class="flex justify-between items-center"><span class="text-sm text-gray-500"><i class="fas fa-users mr-1"></i>${p.votes} apoiadores</span><button onclick="openVoteModal(${p.id})" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm ${p.status!=='funding'? 'opacity-50 cursor-not-allowed' : ''}" ${p.status!=='funding'? 'disabled' : ''}><i class="fas fa-heart mr-1"></i>Apoiar</button></div>`; grid.appendChild(card); }); }
-
-        function showMilitaryProjects(){ showSection('military'); renderMilitaryProjects(); }
+    // military projects are now displayed within the main projects grid via getAllProjects()
 
         // Navigation
         function showSection(sectionName) {
@@ -1258,7 +1231,6 @@
             // atualizar pontos patrióticos e sugestões/military
             updatePatrioticUI();
             renderSuggestions();
-            renderMilitaryProjects();
 
             // seed bananas and start interval
             createBananaElements(20);
