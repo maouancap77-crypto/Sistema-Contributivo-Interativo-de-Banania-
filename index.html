@@ -101,6 +101,29 @@
             animation: strongGlow 1.2s ease-in-out forwards;
             opacity: 1;
         }
+
+         /* audio box controls style */
+        .custom-audio-controls::-webkit-media-controls-panel { /* Para Chrome, Safari, Edge */
+            background: transparent; /* Fundo transparente */
+            border: none; /* Sem borda */
+            border-radius: 0; /* Cantos retos, se houver */
+            box-shadow: none; /* Remover sombras */
+        }
+        
+        .custom-audio-controls::-webkit-media-controls-volume-slider { /* Estilizar o slider de volume, se aparecer */
+            color: white; /* Cor do slider (pode não funcionar em todos os casos) */
+        }
+        
+        /* For Firefox */
+        .custom-audio-controls {
+            background: transparent; /* Fundo do elemento audio */
+        }
+    
+        .custom-audio-controls {
+            border: none; /* Remove borda do elemento audio */
+            outline: none; /* Remove contorno de foco, se desejado */
+            /* O fundo transparente do painel de controles é mais difícil no Firefox */
+        }
     </style>
 </head>
 <body class="h-full tropical-bg bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -142,7 +165,7 @@
         </div>
     </nav>
     <!-- audio button -->
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio>
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls class="custom-audio-controls" style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio>
     
     <!-- Main Content -->
     <!-- Banana decor layer -->
