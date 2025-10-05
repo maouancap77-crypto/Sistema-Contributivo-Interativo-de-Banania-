@@ -141,15 +141,8 @@
             </div>
         </div>
     </nav>
+    <!-- audio button -->>
     <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/9/90/Ernesto_Nazareth_-_Tico-Tico_no_Fuba.ogg" loop controls style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio>
-    <script>
-        document.addEventListener('click', function() {
-        var audio = document.getElementById('bgMusic');
-        if (audio.paused) {
-            audio.play();
-            }
-        });
-    </script>
     
     <!-- Main Content -->
     <!-- Banana decor layer -->
@@ -1271,6 +1264,14 @@
             setInterval(() => {
                 triggerRandomBananaGlow();
             }, 1500 + Math.random() * 3000);
+        });
+
+        //audio System
+        document.addEventListener('click', function() {
+        var audio = document.getElementById('bgMusic');
+        if (audio.paused) {
+            audio.play();
+            }
         });
     </script>
 </body>
