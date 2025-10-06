@@ -101,29 +101,6 @@
             animation: strongGlow 1.2s ease-in-out forwards;
             opacity: 1;
         }
-
-         /* audio box controls style */
-        .custom-audio-controls::-webkit-media-controls-panel { /* Para Chrome, Safari, Edge */
-            background: transparent; /* Fundo transparente */
-            border: none; /* Sem borda */
-            border-radius: 0; /* Cantos retos, se houver */
-            box-shadow: none; /* Remover sombras */
-        }
-
-        .custom-audio-controls::-webkit-media-controls-volume-slider { /* Estilizar o slider de volume, se aparecer */
-            color: white; /* Cor do slider (pode não funcionar em todos os casos) */
-        }
-
-        /* For Firefox */
-        .custom-audio-controls {
-            background: transparent; /* Fundo do elemento audio */
-        }
-
-        .custom-audio-controls {
-            border: none; /* Remove borda do elemento audio */
-            outline: none; /* Remove contorno de foco, se desejado */
-            /* O fundo transparente do painel de controles é mais difícil no Firefox */
-        }
     </style>
 </head>
 <body class="h-full tropical-bg bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
@@ -153,22 +130,23 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <div class="text-sm text-gray-600 dark:text-gray-400">
-                        <span class="font-semibold">Rodolfo Planador de Azúcar</span>
+                        <span class="font-semibold">Carlos Mangueira</span>
                         <span class="block text-xs">Ciudadano #42069</span>
                     </div>
-                    <div class="text-sm text-primary font-bold">
-                        <span id="userBananaBalance" class="block">🍌 2.350 Bananas</span>
-                        <span class="text-xs text-gray-500">créditos do povo</span>
+                    <div class="flex items-center space-x-3">
+                        <div class="text-sm text-primary font-bold">
+                            <span id="userBananaBalance" class="block">🍌 2.350 Bananas</span>
+                            <span class="text-xs text-gray-500">créditos do povo</span>
+                        </div>
+                        <!-- Mute button for audio system -->
+                        <button id="muteBtn" onclick="toggleMute()" title="Ativar/Desativar som" class="text-gray-600 dark:text-gray-300 hover:text-primary px-2 py-1 rounded">
+                            <i id="muteIcon" class="fas fa-volume-up"></i>
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-        <button id="musicToggleBtn" class="ml-4 text-2xl text-primary hover:text-secondary" title="Música">
-              <i id="musicIcon" class="fas fa-volume-up"></i>
-        </button>
     </nav>
-    <!-- audio button 
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls class="custom-audio-controls" style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio> -->
 
     <!-- Main Content -->
     <!-- Banana decor layer -->
@@ -206,7 +184,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="glass rounded-lg p-6 bg-gradient-to-br from-palm/20 to-green-100/20">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -218,7 +196,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="glass rounded-lg p-6 bg-gradient-to-br from-tropical/20 to-blue-100/20">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -230,7 +208,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="glass rounded-lg p-6 bg-gradient-to-br from-sunset/20 to-pink-100/20">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -253,7 +231,7 @@
                             <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
                             <div>
                                 <p class="text-sm font-medium text-gray-900 dark:text-white">Votou em "Nova Ponte Cidade"</p>
-                                <p class="text-xs text-gray-500">B$ 500,00 • 2 horas atrás</p>
+                                <p class="text-xs text-gray-500">R$ 500,00 • 2 horas atrás</p>
                             </div>
                         </div>
                         <span class="text-green-500 text-sm">+50 pontos</span>
@@ -332,7 +310,7 @@
                 <div class="glass rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saldo Atual</h3>
                     <div class="text-center py-8">
-                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">B$ 2.350,00</p>
+                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">R$ 2.350,00</p>
                         <p class="text-gray-600 dark:text-gray-400">Créditos disponíveis</p>
                         <div class="mt-4 space-x-4">
                             <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
@@ -456,7 +434,7 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
                                     <input id="withdrawAmountInput" type="text" inputmode="numeric" value="50" class="w-full px-3 py-2 border rounded-md" />
                                     <input id="withdrawAmountRange" type="range" min="1" max="5000" value="50" class="w-full mt-2" />
-                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: B$ 2.350,00</p>
+                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: R$ 2.350,00</p>
                                 </div>
                                 <div class="flex justify-end space-x-3">
                                     <button onclick="closeWithdrawModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
@@ -675,7 +653,7 @@
                 section.classList.add('hidden');
             });
             document.getElementById(sectionName).classList.remove('hidden');
-
+            
             // Update nav buttons
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-primary', 'font-semibold');
@@ -693,13 +671,13 @@
         function renderProjects(projectsToRender = getAllProjects()) {
             const grid = document.getElementById('projects-grid');
             grid.innerHTML = '';
-
+            
             projectsToRender.forEach(project => {
                 const progressPercentage = (project.raised / project.budget) * 100;
                 const statusBadge = project.status === 'funding' ? 
                     '<span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded">Arrecadando</span>' :
                     '<span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded">Selecionando Prestador</span>';
-
+                
                 const card = document.createElement('div');
                 card.className = 'glass rounded-lg p-6 project-card';
                 card.setAttribute('data-category', project.category);
@@ -712,7 +690,7 @@
                     <div class="mb-4">
                         <div class="flex justify-between text-sm mb-1">
                             <span class="text-gray-600 dark:text-gray-400">Arrecadado</span>
-                            <span class="font-semibold text-gray-900 dark:text-white">B$ ${project.raised.toLocaleString()} / B$ ${project.budget.toLocaleString()}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">R$ ${project.raised.toLocaleString()} / R$ ${project.budget.toLocaleString()}</span>
                         </div>
                         <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div class="bg-primary h-2 rounded-full" style="width: ${progressPercentage}%"></div>
@@ -739,7 +717,7 @@
                 btn.classList.add('bg-primary', 'text-white');
                 btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
             }
-
+            
             // Filter projects (search across civilian + military)
             if (category === 'all') {
                 renderProjects();
@@ -753,7 +731,7 @@
         function renderProviders() {
             const grid = document.getElementById('providers-grid');
             grid.innerHTML = '';
-
+            
             providers.forEach(provider => {
                 const card = document.createElement('div');
                 card.className = 'glass rounded-lg p-6';
@@ -792,12 +770,12 @@
 
         function createProject(event) {
             event.preventDefault();
-
+            
             const title = document.getElementById('projectTitle').value;
             const category = document.getElementById('projectCategory').value;
             const description = document.getElementById('projectDescription').value;
             const budget = parseInt(document.getElementById('projectBudget').value);
-
+            
             const maxId = Math.max(0, ...getAllProjects().map(p => p.id || 0));
             const newProject = {
                 id: maxId + 1,
@@ -810,11 +788,11 @@
                 status: 'funding',
                 createdBy: 'João Silva'
             };
-
+            
             projects.unshift(newProject);
             hideCreateProject();
             renderProjects();
-
+            
             // Show success message (custom modal instead of alert)
             showSuccessMessage('Projeto criado com sucesso!');
         }
@@ -823,7 +801,7 @@
             let project = projects.find(p => p.id === projectId);
             if (!project) project = militaryProjects.find(p => p.id === projectId);
             if (!project || project.status !== 'funding') return;
-
+            
             const modal = document.getElementById('voteModal');
             const content = document.getElementById('voteContent');
             const bal = getBalance();
@@ -834,8 +812,8 @@
                     <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${project.description}</p>
                 </div>
                 <div class="mb-4">
-                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: B$ ${project.budget.toLocaleString()}</p>
-                    <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: B$ ${project.raised.toLocaleString()}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: R$ ${project.budget.toLocaleString()}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: R$ ${project.raised.toLocaleString()}</p>
                 </div>
                 <form id="voteForm" onsubmit="submitVote(event, ${projectId})">
                     <div class="mb-4">
@@ -862,7 +840,7 @@
                     input.max = String(bal);
                 }
             }, 50);
-
+            
             modal.classList.remove('hidden');
         }
 
@@ -872,7 +850,7 @@
 
         function submitVote(event, projectId) {
             event.preventDefault();
-
+            
             const amount = parseInputNumber(document.getElementById('voteAmount').value);
             // find project in civilian or military lists
             let project = projects.find(p => p.id === projectId);
@@ -942,11 +920,103 @@
                 </div>
             `;
             document.body.appendChild(successModal);
+            // play a success chime unless muted
+            playSuccessChime();
 
             setTimeout(() => {
                 successModal.remove();
             }, 3000);
         }
+
+        /* AUDIO SYSTEM (simple WebAudio chime + mute persistence) */
+        const AUDIO_MUTED_KEY = 'banania_audio_muted';
+        let audioCtx = null;
+        let audioAllowed = true; // browsers may require user gesture; we'll lazily create context
+
+        function ensureAudioContext() {
+            if (audioCtx) return audioCtx;
+            try {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new Ctx();
+            } catch (e) {
+                audioAllowed = false;
+                return null;
+            }
+            return audioCtx;
+        }
+
+        function isMuted() {
+            return localStorage.getItem(AUDIO_MUTED_KEY) === '1';
+        }
+
+        function setMuted(val) {
+            localStorage.setItem(AUDIO_MUTED_KEY, val ? '1' : '0');
+            updateMuteIcon();
+        }
+
+        function toggleMute() {
+            const newVal = !isMuted();
+            setMuted(newVal);
+            if (!newVal) {
+                // if unmuting, try to resume audio context on gesture
+                const ctx = ensureAudioContext();
+                if (ctx && ctx.state === 'suspended') ctx.resume();
+            }
+        }
+
+        function updateMuteIcon() {
+            const icon = document.getElementById('muteIcon');
+            if (!icon) return;
+            if (isMuted()) {
+                icon.className = 'fas fa-volume-mute';
+            } else {
+                icon.className = 'fas fa-volume-up';
+            }
+        }
+
+        // small success chime using oscillator + gain envelope
+        function playSuccessChime() {
+            if (isMuted()) return;
+            const ctx = ensureAudioContext();
+            if (!ctx) return;
+
+            // some browsers require a user gesture to start; try to resume
+            if (ctx.state === 'suspended') {
+                // avoid uncaught promise in older browsers
+                ctx.resume().catch(() => {});
+            }
+
+            try {
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, now);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.12, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } catch (e) {
+                // ignore audio errors gracefully
+                console.warn('Audio play failed', e);
+            }
+        }
+
+        // initialize mute icon state on load
+        document.addEventListener('DOMContentLoaded', () => {
+            updateMuteIcon();
+            // guard: ensure audio context created only after user interacts
+            // add a gesture listener to resume audio context if needed
+            ['click','touchstart','keydown'].forEach(evt => {
+                window.addEventListener(evt, function _initAudioOnce() {
+                    ensureAudioContext();
+                    window.removeEventListener(evt, _initAudioOnce);
+                }, { once: true });
+            });
+        });
 
         /* WALLET / SALDO: gerenciamento local usando localStorage */
         const BALANCE_KEY = 'banania_user_balance';
@@ -965,7 +1035,7 @@
         }
 
         function formatCurrencyBR(value) {
-            return 'B$ ' + value.toLocaleString('pt-BR');
+            return 'R$ ' + value.toLocaleString('pt-BR');
         }
 
         function updateBalanceUI() {
@@ -1181,7 +1251,17 @@
             "¡El oro y las bananas de nuestro pueblo financian el futuro más brillante del Caribe!",
             "¡En Banania no hay corrupción porque El Presidente vigila personalmente cada banana!",
             "¡Los proyectos del pueblo son los proyectos de El Presidente! ¡Viva la unidad nacional!",
-            "¡Banania demuestra que la democracia y las palmeras van de la mano hacia la prosperidad!"
+            "¡Banania demuestra que la democracia y las palmeras van de la mano hacia la prosperidad!",
+            "¡En Banania, las elecciones siempre son libres! Libres de sorpresa, porque El Presidente siempre gana.",
+            "¡El pueblo pidió pan, y El Presidente les dio circo tropical! ¡Qué generosidad!",
+            "¡Nuestros opositores no están desaparecidos, solo de vacaciones muy largas en las minas de oro!",
+            "¡En Banania, la libertad de prensa es tan fuerte que los periódicos ya saben qué escribir antes de imprimir!",
+            "¡El Presidente comparte la riqueza! Él se queda con el oro, y ustedes con el orgullo nacional.",
+            "¡Democracia tropical significa que todos votan… por El Presidente, claro está!",
+            "¡El paraíso no se construye solo! Por eso, ustedes trabajan y El Presidente supervisa desde la hamaca.",
+            "¡El Presidente siempre escucha al pueblo! Aunque a veces prefiere apagar el micrófono.",
+            "¡En Banania, no hay problemas económicos! Solo oportunidades patrióticas de trabajar más.",
+            "¡La unidad nacional es tan fuerte que incluso las opiniones contrarias se unen… en silencio!"
         ];
 
         let currentMessageIndex = 0;
@@ -1189,23 +1269,23 @@
         function showPresidentMessage() {
             const messageElement = document.getElementById('presidentMessage');
             const textElement = document.getElementById('messageText');
-
+            
             // Fade out
             messageElement.style.opacity = '0';
-
+            
             setTimeout(() => {
                 // Change message
                 textElement.textContent = presidentMessages[currentMessageIndex];
                 currentMessageIndex = (currentMessageIndex + 1) % presidentMessages.length;
-
+                
                 // Fade in
                 messageElement.style.opacity = '1';
-
+                
                 // Schedule fade out (keep message visible longer)
                 setTimeout(() => {
                     messageElement.style.opacity = '0';
                 }, 8000);
-
+                
             }, 500);
         }
 
@@ -1291,32 +1371,6 @@
                 triggerRandomBananaGlow();
             }, 1500 + Math.random() * 3000);
         });
-
-        //audio System
-       /* document.addEventListener('click', function() {
-        var audio = document.getElementById('bgMusic');
-        if (audio.paused) {
-            audio.play();
-            }
-        }); */
-        document.addEventListener('DOMContentLoaded', function(){
-              const audio = document.getElementById('bgMusic');
-              const btn = document.getElementById('musicToggleBtn');
-              const icon = document.getElementById('musicIcon');
-              let isMuted = false;
-            
-              // Tenta tocar por padrão
-              audio.volume = 0.5;
-              audio.play().catch(()=>{});
-            
-              btn.addEventListener('click', function(){
-                isMuted = !isMuted;
-                audio.muted = isMuted;
-                icon.className = 'fas ' + (isMuted ? 'fa-volume-mute' : 'fa-volume-up');
-              });
-            });
     </script>
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop style="display:none"></audio>
-    
 </body>
 </html>
