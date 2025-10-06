@@ -1422,7 +1422,7 @@
             initBackgroundMusic();
         });
     </script>
-    <!-- Background music element (looping) -->
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls style="position:fixed;bottom:16px;right:16px;z-index:1000;background:rgba(255,255,255,0.9);border-radius:8px;padding:6px;"></audio>
+    <!-- Background music element (looping) - hidden UI, controlled from header mute button -->
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop preload="auto" style="display:none;" aria-hidden="true"></audio>
 </body>
 </html>
