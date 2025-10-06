@@ -268,7 +268,7 @@
             <!-- Category Filter -->
             <div class="flex flex-wrap gap-2 mb-6">
                 <button onclick="filterProjects('all', this)" class="filter-btn bg-primary text-white px-4 py-2 rounded-full text-sm">🌴 Todos</button>
-                <button onclick="filterProjects('infraestrutura', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌉 Infraestructura</button>
+                <button onclick="filterProjects('infraestrutura', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">海峡 Infraestructura</button>
                 <button onclick="filterProjects('saude', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🏥 Salud</button>
                 <button onclick="filterProjects('educacao', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🎭 Cultura</button>
                 <button onclick="filterProjects('meio-ambiente', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌺 Ecología</button>
@@ -472,7 +472,7 @@
         let projects = [
             {
                 id: 1,
-                title: "🌉 Puente El Presidente",
+                title: "海峡 Puente El Presidente",
                 category: "infraestrutura",
                 description: "Majestuosa ponte sobre el Río Banania para unir Puerto Mango con Villa Coco, gloria de nuestra república.",
                 budget: 250000,
@@ -1156,14 +1156,6 @@
             }
         }
 
-        //audio System - Função antiga removida
-        // document.addEventListener('click', function() {
-        // var audio = document.getElementById('bgMusic');
-        // if (audio.paused) {
-        //     audio.play();
-        //     }
-        // });
-
         // Novo sistema de áudio com botão de mudo
         document.addEventListener('DOMContentLoaded', function(){
           const audio = document.getElementById('bgMusic');
@@ -1203,4 +1195,3 @@
     </script>
 </body>
 </html>
-```
