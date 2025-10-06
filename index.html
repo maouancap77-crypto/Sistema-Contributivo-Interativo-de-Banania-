@@ -969,6 +969,8 @@
                 const ctx = ensureAudioContext();
                 if (ctx && ctx.state === 'suspended') ctx.resume();
             }
+            // update background music playback according to new mute state
+            updateBackgroundMusic();
         }
 
         function updateMuteIcon() {
@@ -1382,6 +1384,45 @@
                 triggerRandomBananaGlow();
             }, 1500 + Math.random() * 3000);
         });
+
+        // Background music control
+        function initBackgroundMusic() {
+            const audio = document.getElementById('bgMusic');
+            if (!audio) return;
+
+            // if muted set volume to 0 or pause
+            updateBackgroundMusic();
+
+            // try to autoplay after user gesture
+            ['click','touchstart','keydown'].forEach(evt => {
+                window.addEventListener(evt, function _startBgOnce() {
+                    // attempt to play (some browsers require gesture)
+                    audio.play().catch(() => {});
+                    window.removeEventListener(evt, _startBgOnce);
+                }, { once: true });
+            });
+        }
+
+        function updateBackgroundMusic() {
+            const audio = document.getElementById('bgMusic');
+            if (!audio) return;
+            if (isMuted()) {
+                // pause and mute audio
+                try { audio.pause(); } catch (e) {}
+                audio.muted = true;
+            } else {
+                audio.muted = false;
+                // try to play (ignore promise)
+                audio.play().catch(() => {});
+            }
+        }
+
+        // initialize background music after DOM ready
+        document.addEventListener('DOMContentLoaded', function(){
+            initBackgroundMusic();
+        });
     </script>
+    <!-- Background music element (looping) -->
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls style="position:fixed;bottom:16px;right:16px;z-index:1000;background:rgba(255,255,255,0.9);border-radius:8px;padding:6px;"></audio>
 </body>
 </html>
