@@ -38,6 +38,7 @@
         .dark .gradient-bg {
             background: linear-gradient(135deg, #2D3748 0%, #1A202C 100%);
         }
+
         @keyframes glow {
             0%, 100% { 
                 text-shadow: 0 0 5px #FFD23F, 0 0 10px #FFD23F;
@@ -62,6 +63,7 @@
         .dark .tropical-bg {
             background: linear-gradient(135deg, #04493a 0%, #013a31 100%);
         }
+
         /* Container de bananas espalhadas no fundo */
         .banana-container {
             position: fixed;
@@ -73,6 +75,7 @@
             opacity: 0.18; /* Leve transparência para não competir com o conteúdo */
             overflow: hidden;
         }
+
         .banana {
             position: absolute;
             font-size: 2rem;
@@ -81,6 +84,7 @@
             transition: transform 400ms ease, opacity 400ms ease;
             opacity: 0.9;
         }
+
         /* Classe aplicada temporariamente para o brilho */
         .banana-glow {
             animation: glow 1.6s ease-in-out forwards;
@@ -96,6 +100,29 @@
         .banana-glow.strong {
             animation: strongGlow 1.2s ease-in-out forwards;
             opacity: 1;
+        }
+
+         /* audio box controls style */
+        .custom-audio-controls::-webkit-media-controls-panel { /* Para Chrome, Safari, Edge */
+            background: transparent; /* Fundo transparente */
+            border: none; /* Sem borda */
+            border-radius: 0; /* Cantos retos, se houver */
+            box-shadow: none; /* Remover sombras */
+        }
+
+        .custom-audio-controls::-webkit-media-controls-volume-slider { /* Estilizar o slider de volume, se aparecer */
+            color: white; /* Cor do slider (pode não funcionar em todos os casos) */
+        }
+
+        /* For Firefox */
+        .custom-audio-controls {
+            background: transparent; /* Fundo do elemento audio */
+        }
+
+        .custom-audio-controls {
+            border: none; /* Remove borda do elemento audio */
+            outline: none; /* Remove contorno de foco, se desejado */
+            /* O fundo transparente do painel de controles é mais difícil no Firefox */
         }
     </style>
 </head>
@@ -113,8 +140,14 @@
                         <div class="flex items-baseline space-x-4">
                             <button onclick="showSection('dashboard')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏖️ Plaza Central</button>
                             <button onclick="showSection('projects')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🏗️ Proyectos</button>
-                            <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
-                            <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
+                                <!-- Header button commented per request: Militares (kept here commented so you can re-enable later)
+                                <button onclick="showMilitaryProjects()" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🪖 Militares</button>
+                                -->
+                                <!-- Header suggestions button commented (the suggestions form exists in Projects page)
+                                <button onclick="openSuggestions()" id="suggestionsNavBtn" class="nav-btn text-gray-400 dark:text-gray-500 px-3 py-2 rounded-md text-sm font-medium">💡 Sugestões</button>
+                                -->
+                                <button onclick="showSection('providers')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">👷 Trabajadores</button>
+                                <button onclick="showSection('wallet')" class="nav-btn text-gray-700 dark:text-gray-300 hover:text-primary px-3 py-2 rounded-md text-sm font-medium">🌴 Banco</button>
                         </div>
                     </div>
                 </div>
@@ -127,69 +160,1140 @@
                         <span id="userBananaBalance" class="block">🍌 2.350 Bananas</span>
                         <span class="text-xs text-gray-500">créditos do povo</span>
                     </div>
-                    <!-- Botão de Mudo/Com Música -->
-                    <button id="musicToggleBtn" class="ml-4 text-2xl text-primary hover:text-secondary" title="Música">
-                        <i id="musicIcon" class="fas fa-volume-up"></i>
-                    </button>
                 </div>
             </div>
         </div>
     </nav>
+    <!-- audio button -->
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls class="custom-audio-controls" style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio>
+
     <!-- Main Content -->
     <!-- Banana decor layer -->
     <div class="banana-container" aria-hidden="true"></div>
+
     <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 relative" style="z-index:10;">
-        <!-- ... (restante do conteúdo permanece igual) ... -->
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <!-- El Presidente Message Banner -->
+            <div id="presidentMessage" class="glass rounded-lg p-4 mb-6 bg-gradient-to-r from-primary to-secondary opacity-0 transition-all duration-1000">
+                <div class="flex items-center">
+                    <span class="text-3xl mr-3">🎯</span>
+                    <div>
+                        <p class="text-white font-bold">Mensaje de El Presidente:</p>
+                        <p class="text-white text-sm" id="messageText">¡El pueblo de Banania es el más democrático del Caribe! ¡Viva la transparencia!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">🏖️ Plaza Central de Banania</h2>
+                <p class="text-gray-600 dark:text-gray-400">¡Bienvenido a la República Super Democrática más tropical del mundo!</p>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass rounded-lg p-6 bg-gradient-to-br from-banana/20 to-yellow-100/20">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">🍌</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Bananas del Pueblo</p>
+                            <p id="plazaBananasCount" class="text-2xl font-bold text-gray-900 dark:text-white">2.350</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass rounded-lg p-6 bg-gradient-to-br from-palm/20 to-green-100/20">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">🏗️</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Proyectos Apoyados</p>
+                            <p id="plazaProjectsSupported" class="text-2xl font-bold text-gray-900 dark:text-white">7</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass rounded-lg p-6 bg-gradient-to-br from-tropical/20 to-blue-100/20">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">⭐</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Puntos Patrióticos</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white patrioticPoints">1,245</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass rounded-lg p-6 bg-gradient-to-br from-sunset/20 to-pink-100/20">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <span class="text-3xl">🏆</span>
+                        </div>
+                        <div class="ml-4">
+                            <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Ranking Nacional</p>
+                            <p class="text-2xl font-bold text-gray-900 dark:text-white">#42</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="glass rounded-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Atividade Recente</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Votou em "Nova Ponte Cidade"</p>
+                                <p class="text-xs text-gray-500">B$ 500,00 • 2 horas atrás</p>
+                            </div>
+                        </div>
+                        <span class="text-green-500 text-sm">+50 pontos</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4">
+                        <div class="flex items-center">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Projeto "Reforma da Praça" finalizado</p>
+                                <p class="text-xs text-gray-500">Prestador: Silva Construções • 1 dia atrás</p>
+                            </div>
+                        </div>
+                        <span class="text-blue-500 text-sm">+100 pontos</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div id="projects" class="section hidden">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">🏗️ Proyectos de la República</h2>
+                    <p class="text-gray-600 dark:text-gray-400">¡Construyamos juntos el paraíso tropical que El Presidente sueña!</p>
+                </div>
+                <button onclick="showCreateProject()" class="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-plus mr-2"></i>¡Proponer Proyecto!
+                </button>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="filterProjects('all', this)" class="filter-btn bg-primary text-white px-4 py-2 rounded-full text-sm">🌴 Todos</button>
+                <button onclick="filterProjects('infraestrutura', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌉 Infraestructura</button>
+                <button onclick="filterProjects('saude', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🏥 Salud</button>
+                <button onclick="filterProjects('educacao', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🎭 Cultura</button>
+                <button onclick="filterProjects('meio-ambiente', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🌺 Ecología</button>
+                <button onclick="filterProjects('militar', this)" class="filter-btn bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-full text-sm">🪖 Militares</button>
+            </div>
+
+            <!-- Projects Grid -->
+            <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Project cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Providers Section -->
+        <div id="providers" class="section hidden">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Prestadores</h2>
+                    <p class="text-gray-600 dark:text-gray-400">Profissionais e empresas disponíveis para execução</p>
+                </div>
+                <button onclick="showRegisterProvider()" class="bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                    <i class="fas fa-user-plus mr-2"></i>Cadastrar-se
+                </button>
+            </div>
+
+            <!-- Providers Grid -->
+            <div id="providers-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Provider cards will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Suggestions form removed from global area — suggestions are handled within Projects section only -->
+
+        <!-- Wallet Section -->
+        <div id="wallet" class="section hidden">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Carteira Digital</h2>
+                <p class="text-gray-600 dark:text-gray-400">Gerencie seus créditos tributários</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Balance Card -->
+                <div class="glass rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Saldo Atual</h3>
+                    <div class="text-center py-8">
+                        <p id="walletBalanceValue" class="text-4xl font-bold text-primary mb-2">B$ 2.350,00</p>
+                        <p class="text-gray-600 dark:text-gray-400">Créditos disponíveis</p>
+                        <div class="mt-4 space-x-4">
+                            <button onclick="openAddModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg">
+                                <i class="fas fa-plus mr-2"></i>Adicionar
+                            </button>
+                            <button onclick="openWithdrawModal()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+                                <i class="fas fa-wallet mr-2"></i>Sacar
+                            </button>
+                            <button onclick="openHistoryModal()" class="bg-gray-100 dark:bg-gray-700 px-4 py-2 rounded-lg">
+                                <i class="fas fa-history mr-2"></i>Histórico
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History -->
+                <div class="glass rounded-lg p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Últimas Transações</h3>
+                    <div id="transactionsList" class="space-y-4">
+                        <!-- preenchido via JS com histórico persistente -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </main>
-    <!-- Modals ... -->
-    <!-- Áudio oculto -->
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop style="display:none"></audio>
+
+    <!-- Modals -->
+    <!-- Create Project Modal -->
+    <div id="createProjectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Criar Novo Projeto</h3>
+                    <button onclick="hideCreateProject()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <form onsubmit="createProject(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+                            <input type="text" id="projectTitle" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoria</label>
+                            <select id="projectCategory" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base">
+                                <option value="infraestrutura">Infraestrutura</option>
+                                <option value="saude">Saúde</option>
+                                <option value="educacao">Educação</option>
+                                <option value="meio-ambiente">Meio Ambiente</option>
+                                <option value="militar">Militar</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descrição</label>
+                            <textarea id="projectDescription" rows="3" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Orçamento Estimado (B$)</label>
+                            <input type="number" id="projectBudget" min="100" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button type="button" onclick="hideCreateProject()" class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white hover:bg-secondary rounded">Criar Projeto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vote Modal -->
+    <div id="voteModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Apoiar Projeto</h3>
+                    <button onclick="hideVoteModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div id="voteContent">
+                    <!-- Content will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        </div>
+
+                <!-- Add / Withdraw Modals -->
+                <div id="addModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Adicionar Bananas</h3>
+                                <button onclick="closeAddModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
+                                    <input id="addAmountInput" type="text" inputmode="numeric" value="100" class="w-full px-3 py-2 border rounded-md" />
+                                    <input id="addAmountRange" type="range" min="1" max="5000" value="100" class="w-full mt-2" />
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="closeAddModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
+                                    <button onclick="confirmAdd()" class="px-4 py-2 bg-green-500 text-white rounded">Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="withdrawModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sacar Bananas</h3>
+                                <button onclick="closeWithdrawModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantidade</label>
+                                    <input id="withdrawAmountInput" type="text" inputmode="numeric" value="50" class="w-full px-3 py-2 border rounded-md" />
+                                    <input id="withdrawAmountRange" type="range" min="1" max="5000" value="50" class="w-full mt-2" />
+                                    <p id="withdrawHint" class="text-xs text-gray-500 mt-1">Saldo disponível: B$ 2.350,00</p>
+                                </div>
+                                <div class="flex justify-end space-x-3">
+                                    <button onclick="closeWithdrawModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 rounded">Cancelar</button>
+                                    <button onclick="confirmWithdraw()" class="px-4 py-2 bg-blue-500 text-white rounded">Sacar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction History Modal (detalhe) - opcional pequena view -->
+                <div id="historyModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden z-50">
+                    <div class="flex items-center justify-center min-h-screen p-4">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-lg w-full p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Histórico de Transações</h3>
+                                <button onclick="closeHistoryModal()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div id="historyList" class="space-y-2 max-h-64 overflow-auto text-sm text-gray-700 dark:text-gray-300">
+                                <!-- preenchido por JS -->
+                            </div>
+                            <div class="mt-4 text-right">
+                                <button onclick="closeHistoryModal()" class="px-4 py-2 bg-primary text-white rounded">Fechar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    </div>
+
     <script>
-        // Dark mode detection ... (igual)
-        // Demais JS ... (igual)
+        // Dark mode detection
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.documentElement.classList.add('dark');
+        }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        });
 
-        // --- CORREÇÃO DO BOTÃO DE ÁUDIO ---
-        document.addEventListener('DOMContentLoaded', function () {
-            const audio = document.getElementById('bgMusic');
-            const btn = document.getElementById('musicToggleBtn');
-            const icon = document.getElementById('musicIcon');
+        // Sample data - Projetos da República Super Democrática de Banania
+        let projects = [
+            {
+                id: 1,
+                title: "🌉 Puente El Presidente",
+                category: "infraestrutura",
+                description: "Majestuosa ponte sobre el Río Banania para unir Puerto Mango con Villa Coco, gloria de nuestra república.",
+                budget: 250000,
+                raised: 180000,
+                votes: 45,
+                status: "funding",
+                createdBy: "Comandante Piña"
+            },
+            {
+                id: 2,
+                title: "🏥 Hospital Tropical de la Salsa",
+                category: "saude",
+                description: "Renovación completa del centro médico más importante de Banania, con aire acondicionado de primera clase.",
+                budget: 120000,
+                raised: 95000,
+                votes: 32,
+                status: "funding",
+                createdBy: "Dr. Mango López"
+            },
+            {
+                id: 3,
+                title: "🌴 Parque Nacional del Plátano",
+                category: "meio-ambiente",
+                description: "Santuario ecológico con senderos para iguanas, área de descanso para turistas y hamacas bajo las palmeras.",
+                budget: 80000,
+                raised: 80000,
+                votes: 67,
+                status: "selecting-provider",
+                createdBy: "Capitán Verde"
+            },
+            {
+                id: 4,
+                title: "🎭 Teatro Nacional El Presidente",
+                category: "educacao",
+                description: "Gran teatro para celebrar la cultura y los discursos inspiradores de El Presidente. ¡Con asientos de cuero!",
+                budget: 150000,
+                raised: 45000,
+                votes: 28,
+                status: "funding",
+                createdBy: "Señora Carmen Salsa"
+            },
+            {
+                id: 5,
+                title: "🏖️ Malecón de la Democracia",
+                category: "infraestrutura",
+                description: "Hermoso paseo marítimo donde los ciudadanos pueden reflexionar sobre las bendiciones de vivir en Banania.",
+                budget: 200000,
+                raised: 120000,
+                votes: 89,
+                status: "funding",
+                createdBy: "Almirante Coco"
+            }
+        ];
 
-            let isMuted = false;
-            let isStarted = false;
+        let providers = [
+            {
+                id: 1,
+                name: "🔨 Construcciones El Martillo de Oro",
+                category: "infraestrutura",
+                rating: 4.8,
+                projects: 23,
+                description: "Empresa líder en obras de infraestrutura bendecida personalmente por El Presidente. ¡15 años de excelencia tropical!"
+            },
+            {
+                id: 2,
+                name: "⚕️ MediTropic Reformas Hospitalarias",
+                category: "saude",
+                rating: 4.9,
+                projects: 18,
+                description: "Especialistas en hospitales y clínicas tropicales. Expertos en aire acondicionado para el calor caribenho."
+            },
+            {
+                id: 3,
+                name: "🌺 EcoParaíso Paisajismo",
+                category: "meio-ambiente",
+                rating: 4.7,
+                projects: 31,
+                description: "Creadores de jardines paradisíacos dignos de Banania. Especialistas en palmeras y plantas tropicales."
+            },
+            {
+                id: 4,
+                name: "🎨 Constructora Cultural Caribeña",
+                category: "educacao",
+                rating: 4.6,
+                projects: 15,
+                description: "Edificamos teatros, escuelas y centros culturales que harían llorar de emoción a El Presidente."
+            }
+        ];
 
-            // Função para alternar áudio e ícone
-            function toggleAudio() {
-                if (!isStarted) {
-                    // Tenta iniciar playback na primeira interação
-                    audio.volume = 0.5;
-                    audio.muted = false;
-                    audio.play().then(() => {
-                        isStarted = true;
-                        isMuted = false;
-                        icon.className = 'fas fa-volume-up';
-                    }).catch(() => {
-                        // Se não conseguir tocar, só muda ícone
-                        isStarted = false;
-                        isMuted = true;
-                        icon.className = 'fas fa-volume-mute';
-                    });
-                } else {
-                    isMuted = !isMuted;
-                    audio.muted = isMuted;
-                    icon.className = 'fas ' + (isMuted ? 'fa-volume-mute' : 'fa-volume-up');
-                }
+        // Patriotic points (persistente)
+        const POINTS_KEY = 'banania_patriotic_points';
+        function getPatrioticPoints() {
+            const raw = localStorage.getItem(POINTS_KEY);
+            if (!raw) return 1245; // valor inicial mostrado no card
+            const n = parseInt(raw,10);
+            return Number.isNaN(n) ? 0 : n;
+        }
+        function setPatrioticPoints(n){ localStorage.setItem(POINTS_KEY, String(Math.max(0, Math.floor(n)))); updatePatrioticUI(); }
+        function updatePatrioticUI(){
+            const points = getPatrioticPoints();
+            // atualizar qualquer elemento que mostre pontos (se existir)
+            document.querySelectorAll('.patrioticPoints').forEach(el => el.textContent = points.toLocaleString());
+            // update suggestion requirement display
+            const req = document.getElementById('suggestionsRequired');
+            if (req) req.textContent = SUGGESTION_POINTS_REQUIRED;
+        }
+
+        const SUGGESTION_POINTS_REQUIRED = 1000; // pontos necessários para desbloquear sugestões
+
+        // Suggestions persistence
+        const SUGGESTIONS_KEY = 'banania_suggestions';
+        function getSuggestions(){ const raw = localStorage.getItem(SUGGESTIONS_KEY); if(!raw) return []; try{return JSON.parse(raw);}catch(e){return [];} }
+        function saveSuggestion(s){ const arr = getSuggestions(); arr.unshift(s); localStorage.setItem(SUGGESTIONS_KEY, JSON.stringify(arr)); renderSuggestions(); }
+        function renderSuggestions(){ const list = document.getElementById('suggestionsList'); const arr = getSuggestions(); if(!list) return; list.innerHTML = ''; if(!arr.length) { list.innerHTML = '<p class="text-sm text-gray-500">Nenhuma sugestão enviada ainda.</p>'; return;} arr.forEach(s => { const el = document.createElement('div'); el.className = 'glass rounded-lg p-4'; el.innerHTML = `<h4 class="font-semibold">${s.title} <span class="text-xs text-gray-500">(${s.category})</span></h4><p class="text-sm text-gray-600">${s.description}</p><p class="text-xs text-gray-400 mt-2">Enviada: ${s.date}</p>`; list.appendChild(el); }); }
+
+        function openSuggestions(){
+            // só abre se usuário tiver pontos suficientes
+            if (getPatrioticPoints() < SUGGESTION_POINTS_REQUIRED) {
+                alert(`Você precisa de pelo menos ${SUGGESTION_POINTS_REQUIRED} pontos patrióticos para enviar sugestões.`);
+                return;
+            }
+            // show the main projects area where suggestion form exists
+            showSection('projects');
+            renderSuggestions();
+        }
+
+        function submitSuggestion(e){ e.preventDefault(); const title = document.getElementById('suggestionTitle').value.trim(); const description = document.getElementById('suggestionDesc').value.trim(); const category = document.getElementById('suggestionCategory').value; if(!title||!description){ alert('Preencha título e descrição.'); return;} const s = { title, description, category, date: new Date().toLocaleString() }; saveSuggestion(s); showSuccessMessage('Sugestão enviada!'); document.getElementById('suggestionForm').reset(); }
+
+        // Military projects dataset and render
+        // ¡Proyectos Militares de El Presidente!
+        const militaryProjects = [
+            { 
+                id: 201, 
+                title: '🛡️ Fortificación Costera', 
+                category: 'militar', 
+                description: '¡Más cañones en la playa, más turistas asustados! También incluye radares para detectar cruceros enemigos... o cruceros llenos de gringos ricos.', 
+                budget: 500000, 
+                raised: 120000, 
+                votes: 12, 
+                status: 'funding' 
+            },
+            { 
+                id: 202, 
+                title: '✈️ Base Aérea Regional', 
+                category: 'militar', 
+                description: 'Una pista tan larga que hasta los aviones de los yanquis van a querer estacionar aquí. Hangares incluidos, porque dormir al aire libre es para campesinos, no para bombarderos.', 
+                budget: 750000, 
+                raised: 300000, 
+                votes: 8, 
+                status: 'funding' 
+            },
+            { 
+                id: 203, 
+                title: '🔫 Balas de Goma Democráticas™', 
+                category: 'militar', 
+                description: '¡Atención, ciudadanos! Esto no tiene nada que ver con las huelgas de la semana pasada (que por supuesto no existieron). El Presidente simplemente quiere municiones suaves para demostrar su lado... humano. ¡Ayude al señor El Presidente a conseguir estos nuevos juguetes!', 
+                budget: 50000, 
+                raised: 500, 
+                votes: 42, 
+                status: 'funding' 
+            }
+        ];
+
+    // military projects are now displayed within the main projects grid via getAllProjects()
+
+        // Navigation
+        function showSection(sectionName) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionName).classList.remove('hidden');
+
+            // Update nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-primary', 'font-semibold');
+                btn.classList.add('text-gray-700', 'dark:text-gray-300');
+            });
+            event.target.classList.add('text-primary', 'font-semibold');
+        }
+
+        // Projects functions
+        function getAllProjects() {
+            // combine civilian projects with military ones so the main view shows everything
+            return (projects || []).concat(militaryProjects || []);
+        }
+
+        function renderProjects(projectsToRender = getAllProjects()) {
+            const grid = document.getElementById('projects-grid');
+            grid.innerHTML = '';
+
+            projectsToRender.forEach(project => {
+                const progressPercentage = (project.raised / project.budget) * 100;
+                const statusBadge = project.status === 'funding' ? 
+                    '<span class="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 text-xs font-medium px-2.5 py-0.5 rounded">Arrecadando</span>' :
+                    '<span class="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 text-xs font-medium px-2.5 py-0.5 rounded">Selecionando Prestador</span>';
+
+                const card = document.createElement('div');
+                card.className = 'glass rounded-lg p-6 project-card';
+                card.setAttribute('data-category', project.category);
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${project.title}</h3>
+                        ${statusBadge}
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${project.description}</p>
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600 dark:text-gray-400">Arrecadado</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">B$ ${project.raised.toLocaleString()} / B$ ${project.budget.toLocaleString()}</span>
+                        </div>
+                        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div class="bg-primary h-2 rounded-full" style="width: ${progressPercentage}%"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-500"><i class="fas fa-users mr-1"></i>${project.votes} apoiadores</span>
+                        <button onclick="openVoteModal(${project.id})" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-lg text-sm ${project.status !== 'funding' ? 'opacity-50 cursor-not-allowed' : ''}" ${project.status !== 'funding' ? 'disabled' : ''}>
+                            <i class="fas fa-heart mr-1"></i>Apoiar
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterProjects(category, btn) {
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('bg-primary', 'text-white');
+                b.classList.add('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
+            });
+            if (btn && btn.classList) {
+                btn.classList.add('bg-primary', 'text-white');
+                btn.classList.remove('bg-gray-200', 'dark:bg-gray-700', 'text-gray-700', 'dark:text-gray-300');
             }
 
-            // Atualiza ícone conforme mudo/desmudo
-            btn.addEventListener('click', toggleAudio);
+            // Filter projects (search across civilian + military)
+            if (category === 'all') {
+                renderProjects();
+            } else {
+                const filteredProjects = getAllProjects().filter(project => project.category === category);
+                renderProjects(filteredProjects);
+            }
+        }
 
-            // Opcional: se quiser iniciar já tocando quando possível
-            // audio.volume = 0.5;
-            // audio.play().catch(() => {});
+        // Providers functions
+        function renderProviders() {
+            const grid = document.getElementById('providers-grid');
+            grid.innerHTML = '';
 
-            // Se usuário já clicou antes de DOM pronto
-            if (btn && audio && icon) {
-                icon.className = 'fas fa-volume-up';
+            providers.forEach(provider => {
+                const card = document.createElement('div');
+                card.className = 'glass rounded-lg p-6';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">${provider.name}</h3>
+                        <div class="flex items-center text-yellow-500">
+                            <i class="fas fa-star text-sm"></i>
+                            <span class="ml-1 text-sm font-semibold">${provider.rating}</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm mb-4">${provider.description}</p>
+                    <div class="flex justify-between items-center text-sm text-gray-500 mb-4">
+                        <span><i class="fas fa-hammer mr-1"></i>${provider.projects} projetos</span>
+                        <span class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-xs">${provider.category}</span>
+                    </div>
+                    <button class="w-full bg-primary hover:bg-secondary text-white py-2 rounded-lg text-sm">
+                        <i class="fas fa-eye mr-1"></i>Ver Perfil
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Modal functions
+        function showCreateProject() {
+            document.getElementById('createProjectModal').classList.remove('hidden');
+        }
+
+        function hideCreateProject() {
+            document.getElementById('createProjectModal').classList.add('hidden');
+            document.getElementById('projectTitle').value = '';
+            document.getElementById('projectDescription').value = '';
+            document.getElementById('projectBudget').value = '';
+        }
+
+        function createProject(event) {
+            event.preventDefault();
+
+            const title = document.getElementById('projectTitle').value;
+            const category = document.getElementById('projectCategory').value;
+            const description = document.getElementById('projectDescription').value;
+            const budget = parseInt(document.getElementById('projectBudget').value);
+
+            const maxId = Math.max(0, ...getAllProjects().map(p => p.id || 0));
+            const newProject = {
+                id: maxId + 1,
+                title,
+                category,
+                description,
+                budget,
+                raised: 0,
+                votes: 0,
+                status: 'funding',
+                createdBy: 'João Silva'
+            };
+
+            projects.unshift(newProject);
+            hideCreateProject();
+            renderProjects();
+
+            // Show success message (custom modal instead of alert)
+            showSuccessMessage('Projeto criado com sucesso!');
+        }
+
+        function openVoteModal(projectId) {
+            let project = projects.find(p => p.id === projectId);
+            if (!project) project = militaryProjects.find(p => p.id === projectId);
+            if (!project || project.status !== 'funding') return;
+
+            const modal = document.getElementById('voteModal');
+            const content = document.getElementById('voteContent');
+            const bal = getBalance();
+
+            content.innerHTML = `
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-900 dark:text-white">${project.title}</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">${project.description}</p>
+                </div>
+                <div class="mb-4">
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">Meta: B$ ${project.budget.toLocaleString()}</p>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Arrecadado: B$ ${project.raised.toLocaleString()}</p>
+                </div>
+                <form id="voteForm" onsubmit="submitVote(event, ${projectId})">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Valor do Apoio (Bananas)</label>
+                        <input type="text" inputmode="numeric" id="voteAmount" min="1" max="${bal}" value="${(1).toLocaleString('pt-BR')}" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-700 dark:text-white text-base" required>
+                        <input id="voteAmountRange" type="range" min="1" max="${bal}" value="1" class="w-full mt-2" />
+                        <p id="voteBalanceHint" class="text-xs text-gray-500 mt-1">Saldo disponível: ${formatCurrencyBR(bal)}</p>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="hideVoteModal()" class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded">Cancelar</button>
+                        <button type="submit" class="px-4 py-2 bg-primary text-white hover:bg-secondary rounded">Confirmar Apoio</button>
+                    </div>
+                </form>
+            `;
+
+            // wire slider <-> input
+            setTimeout(() => {
+                wireRangeInput('voteAmount','voteAmountRange');
+                // ensure max matches current balance
+                const range = document.getElementById('voteAmountRange');
+                const input = document.getElementById('voteAmount');
+                if (range && input) {
+                    range.max = String(bal);
+                    input.max = String(bal);
+                }
+            }, 50);
+
+            modal.classList.remove('hidden');
+        }
+
+        function hideVoteModal() {
+            document.getElementById('voteModal').classList.add('hidden');
+        }
+
+        function submitVote(event, projectId) {
+            event.preventDefault();
+
+            const amount = parseInputNumber(document.getElementById('voteAmount').value);
+            // find project in civilian or military lists
+            let project = projects.find(p => p.id === projectId);
+            let projectList = 'civilian';
+            if (!project) {
+                project = militaryProjects.find(p => p.id === projectId);
+                projectList = 'military';
+            }
+            if (!project) return;
+
+            if (!Number.isInteger(amount) || amount <= 0) {
+                alert('Valor inválido para apoio.');
+                return;
+            }
+
+            const bal = getBalance();
+            if (amount > bal) {
+                alert('Saldo insuficiente para apoiar este projeto.');
+                return;
+            }
+
+            // debita do saldo do usuário
+            setBalance(bal - amount);
+
+            // aplica ao projeto (update in-place)
+            project.raised += amount;
+            project.votes += 1;
+
+            // if project came from militaryProjects ensure the original array item is updated (objects are by reference, but keep explicit)
+            if (projectList === 'military') {
+                const idx = militaryProjects.findIndex(p => p.id === projectId);
+                if (idx !== -1) militaryProjects[idx] = project;
+            } else {
+                const idx = projects.findIndex(p => p.id === projectId);
+                if (idx !== -1) projects[idx] = project;
+            }
+
+            if (project.raised >= project.budget) {
+                project.status = 'selecting-provider';
+            }
+
+            renderProjects();
+            hideVoteModal();
+            showSuccessMessage(`Apoio de ${amount.toLocaleString()} bananas confirmado!`);
+            // award patriotic points for supporting a project
+            setPatrioticPoints(getPatrioticPoints() + 10);
+            // update plaza stats now
+            updatePlazaStatsFromState();
+            saveTransaction({ title: `Apoio - ${project.title}`, amount: -amount, date: new Date().toLocaleString(), note: `Investido no projeto` });
+        }
+
+        function showRegisterProvider() {
+            showSuccessMessage('Funcionalidade de cadastro de prestador em desenvolvimento!');
+        }
+
+        function showSuccessMessage(message) {
+            const successModal = document.createElement('div');
+            successModal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            successModal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-sm w-full mx-4">
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Sucesso!</h3>
+                    </div>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">${message}</p>
+                    <button onclick="this.closest('.fixed').remove()" class="w-full bg-primary text-white py-2 rounded-lg hover:bg-secondary">OK</button>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+
+            setTimeout(() => {
+                successModal.remove();
+            }, 3000);
+        }
+
+        /* WALLET / SALDO: gerenciamento local usando localStorage */
+        const BALANCE_KEY = 'banania_user_balance';
+
+        function getBalance() {
+            const raw = localStorage.getItem(BALANCE_KEY);
+            if (!raw) return 2350; // valor inicial padrão
+            const n = parseInt(raw, 10);
+            return Number.isNaN(n) ? 0 : n;
+        }
+
+        function setBalance(newAmount) {
+            const n = Math.max(0, Math.floor(newAmount));
+            localStorage.setItem(BALANCE_KEY, String(n));
+            updateBalanceUI();
+        }
+
+        function formatCurrencyBR(value) {
+            return 'B$ ' + value.toLocaleString('pt-BR');
+        }
+
+        function updateBalanceUI() {
+            const bal = getBalance();
+            const header = document.getElementById('userBananaBalance');
+            const walletVal = document.getElementById('walletBalanceValue');
+            if (header) header.textContent = `🍌 ${bal.toLocaleString()} Bananas`;
+            if (walletVal) walletVal.textContent = formatCurrencyBR(bal);
+            // also reflect on plaza bananas count
+            const plazaEl = document.getElementById('plazaBananasCount');
+            if (plazaEl) plazaEl.textContent = bal.toLocaleString();
+        }
+
+        function addBananasPrompt() {
+            const input = prompt('Quantas bananas deseja adicionar ao saldo? (número inteiro)');
+            if (input === null) return; // cancelado
+            const v = parseInt(input.replace(/[^0-9]/g, ''), 10);
+            if (!v || v <= 0) { alert('Entrada inválida. Insira um número inteiro positivo.'); return; }
+            const newBal = getBalance() + v;
+            setBalance(newBal);
+            showSuccessMessage(`Adicionado ${v.toLocaleString()} bananas ao saldo!`);
+        }
+
+        function withdrawBananasPrompt() {
+            const input = prompt('Quantas bananas deseja sacar do saldo? (número inteiro)');
+            if (input === null) return; // cancelado
+            const v = parseInt(input.replace(/[^0-9]/g, ''), 10);
+            if (!v || v <= 0) { alert('Entrada inválida. Insira um número inteiro positivo.'); return; }
+            const bal = getBalance();
+            if (v > bal) { alert('Saldo insuficiente para saque.'); return; }
+            setBalance(bal - v);
+            showSuccessMessage(`Saque de ${v.toLocaleString()} bananas realizado.`);
+        }
+
+        // Transaction history persistence
+        const TRANSACTIONS_KEY = 'banania_transactions';
+
+        function getTransactions() {
+            const raw = localStorage.getItem(TRANSACTIONS_KEY);
+            if (!raw) return [];
+            try { return JSON.parse(raw); } catch (e) { return []; }
+        }
+
+        function saveTransaction(tx) {
+            const arr = getTransactions();
+            arr.unshift(tx); // mais recente primeiro
+            // keep max 200 entries
+            const sliced = arr.slice(0, 200);
+            localStorage.setItem(TRANSACTIONS_KEY, JSON.stringify(sliced));
+            renderTransactions();
+            // any transaction affects plaza recent activity and may award patriotic points
+            // reward small points for actions: +5 for recarga, +10 for apoio, +2 for saque
+            if (tx.title && typeof tx.amount === 'number') {
+                let pts = 0;
+                if (/recarga/i.test(tx.title)) pts = 5;
+                if (/apoio/i.test(tx.title)) pts = 10;
+                if (/saque/i.test(tx.title)) pts = 2;
+                if (pts > 0) {
+                    setPatrioticPoints(getPatrioticPoints() + pts);
+                }
+                // update plaza projects supported/bananas
+                updatePlazaStatsFromState();
+            }
+        }
+
+        function updatePlazaStatsFromState() {
+            // plaza bananas reflect total balance
+            const bal = getBalance();
+            const plazaEl = document.getElementById('plazaBananasCount');
+            if (plazaEl) plazaEl.textContent = bal.toLocaleString();
+
+            // count supported projects as those with raised > 0 across all projects
+            const supported = getAllProjects().filter(p => p.raised && p.raised > 0).length;
+            const supEl = document.getElementById('plazaProjectsSupported');
+            if (supEl) supEl.textContent = supported;
+
+            // update recent activity area from transactions
+            const recent = getTransactions().slice(0,5);
+            const recentContainer = document.querySelector('#dashboard .glass .space-y-4');
+            if (recentContainer) {
+                // build a small activity list
+                recentContainer.innerHTML = recent.map(tx => {
+                    const sign = tx.amount < 0 ? '-' : '+';
+                    const cls = tx.amount < 0 ? 'text-red-500' : 'text-green-500';
+                    return `<div class="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-4"><div class="flex items-center"><div class="w-2 h-2 ${tx.amount>=0? 'bg-green-500':'bg-blue-500'} rounded-full mr-3"></div><div><p class="text-sm font-medium text-gray-900 dark:text-white">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div></div><span class="${cls} text-sm">${sign}${formatCurrencyBR(Math.abs(tx.amount))}</span></div>`;
+                }).join('');
+            }
+        }
+
+        function renderTransactions() {
+            const list = document.getElementById('transactionsList');
+            const modalList = document.getElementById('historyList');
+            const txs = getTransactions();
+            if (list) {
+                list.innerHTML = '';
+                if (!txs.length) {
+                    list.innerHTML = '<p class="text-sm text-gray-500">Nenhuma transação ainda.</p>';
+                } else {
+                    txs.slice(0,5).forEach(tx => {
+                        const el = document.createElement('div');
+                        el.className = 'flex justify-between items-center';
+                        el.innerHTML = `<div><p class="text-sm font-medium text-gray-900 dark:text-white">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div><span class="font-semibold ${tx.amount<0? 'text-red-500':'text-green-500'}">${tx.amount<0? '-': '+'}${formatCurrencyBR(Math.abs(tx.amount))}</span>`;
+                        list.appendChild(el);
+                    });
+                }
+            }
+            if (modalList) {
+                modalList.innerHTML = '';
+                if (!txs.length) {
+                    modalList.innerHTML = '<p class="text-sm text-gray-500">Nenhuma transação ainda.</p>';
+                } else {
+                    txs.forEach(tx => {
+                        const row = document.createElement('div');
+                        row.className = 'flex justify-between items-center py-2 border-b border-gray-100 dark:border-gray-700';
+                        row.innerHTML = `<div><p class="font-medium">${tx.title}</p><p class="text-xs text-gray-500">${tx.date}</p></div><div class="text-right"><p class="font-semibold ${tx.amount<0? 'text-red-500':'text-green-500'}">${tx.amount<0? '-': '+'}${formatCurrencyBR(Math.abs(tx.amount))}</p><p class="text-xs text-gray-400">${tx.note || ''}</p></div>`;
+                        modalList.appendChild(row);
+                    });
+                }
+            }
+        }
+
+        // Modals: open/close and confirm actions
+        function openAddModal() {
+            const defaultVal = 100;
+            document.getElementById('addAmountInput').value = formatInputNumber(defaultVal);
+            document.getElementById('addAmountRange').value = String(defaultVal);
+            document.getElementById('addAmountRange').max = '5000';
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+        function closeAddModal(){ document.getElementById('addModal').classList.add('hidden'); }
+        function openWithdrawModal(){
+            const bal = getBalance();
+            const hint = document.getElementById('withdrawHint');
+            const start = Math.min(50, bal);
+            document.getElementById('withdrawAmountInput').value = formatInputNumber(start);
+            document.getElementById('withdrawAmountRange').max = Math.max(1, bal);
+            document.getElementById('withdrawAmountRange').value = String(start);
+            if (hint) hint.textContent = `Saldo disponível: ${formatCurrencyBR(bal)}`;
+            document.getElementById('withdrawModal').classList.remove('hidden');
+        }
+        function closeWithdrawModal(){ document.getElementById('withdrawModal').classList.add('hidden'); }
+        function openHistoryModal(){ renderTransactions(); document.getElementById('historyModal').classList.remove('hidden'); }
+        function closeHistoryModal(){ document.getElementById('historyModal').classList.add('hidden'); }
+
+        function confirmAdd(){
+            const v = parseInputNumber(document.getElementById('addAmountInput').value) || 0;
+            if (v <= 0) { alert('Informe um valor maior que zero.'); return; }
+            const bal = getBalance();
+            setBalance(bal + v);
+            saveTransaction({ title: 'Recarga', amount: v, date: new Date().toLocaleString(), note: 'Recarga manual' });
+            closeAddModal();
+            showSuccessMessage(`Adicionado ${v.toLocaleString()} bananas.`);
+            // Update plaza stats immediately
+            updatePlazaStatsFromState();
+        }
+
+        function confirmWithdraw(){
+            const v = parseInputNumber(document.getElementById('withdrawAmountInput').value) || 0;
+            const bal = getBalance();
+            if (v <= 0) { alert('Informe um valor maior que zero.'); return; }
+            if (v > bal) { alert('Saldo insuficiente.'); return; }
+            setBalance(bal - v);
+            saveTransaction({ title: 'Saque', amount: -v, date: new Date().toLocaleString(), note: 'Saque manual' });
+            closeWithdrawModal();
+            showSuccessMessage(`Saque de ${v.toLocaleString()} bananas realizado.`);
+            updatePlazaStatsFromState();
+        }
+
+        // sincronização sliders <-> inputs
+        function wireRangeInput(numId, rangeId) {
+            const num = document.getElementById(numId);
+            const range = document.getElementById(rangeId);
+            if (!num || !range) return;
+            // when user types into the formatted text input, parse numeric and update range
+            num.addEventListener('input', () => { 
+                const v = parseInputNumber(num.value);
+                if (!isNaN(v)) range.value = Math.max(range.min, Math.min(range.max, v));
+                num.value = formatInputNumber(parseInt(range.value,10));
+            });
+            range.addEventListener('input', () => { num.value = formatInputNumber(parseInt(range.value,10)); });
+        }
+
+        function parseInputNumber(str) {
+            if (typeof str !== 'string') return NaN;
+            const only = str.replace(/[^0-9-]/g, '');
+            const n = parseInt(only, 10);
+            return Number.isNaN(n) ? NaN : n;
+        }
+
+        function formatInputNumber(n) {
+            if (n === null || n === undefined || Number.isNaN(n)) return '';
+            return n.toLocaleString('pt-BR');
+        }
+
+        // hook sliders
+        document.addEventListener('DOMContentLoaded', function(){
+            wireRangeInput('addAmountInput','addAmountRange');
+            wireRangeInput('withdrawAmountInput','withdrawAmountRange');
+
+            // Vote modal slider wiring will be done when vote modal is opened (because max varies)
+
+            renderTransactions();
+        });
+
+        // El Presidente Messages System
+        const presidentMessages = [
+            "¡El pueblo de Banania es el más democrático del Caribe! ¡Viva la transparencia!",
+            "En Banania, cada banana cuenta para el progreso de la nación. ¡El Presidente está orgulloso!",
+            "¡Ciudadanos! Sus contribuciones hacen de Banania el paraíso tropical más próspero.",
+            "El Presidente bendice personalmente cada proyecto aprobado por el pueblo sabio de Banania.",
+            "¡La democracia tropical nunca había sido tan dulce como en nuestra querida Banania!",
+            "¡Banania es ejemplo mundial de transparencia! Otros países nos envidian, ¡por supuesto!",
+            "¡El oro y las bananas de nuestro pueblo financian el futuro más brillante del Caribe!",
+            "¡En Banania no hay corrupción porque El Presidente vigila personalmente cada banana!",
+            "¡Los proyectos del pueblo son los proyectos de El Presidente! ¡Viva la unidad nacional!",
+            "¡Banania demuestra que la democracia y las palmeras van de la mano hacia la prosperidad!"
+        ];
+
+        let currentMessageIndex = 0;
+
+        function showPresidentMessage() {
+            const messageElement = document.getElementById('presidentMessage');
+            const textElement = document.getElementById('messageText');
+
+            // Fade out
+            messageElement.style.opacity = '0';
+
+            setTimeout(() => {
+                // Change message
+                textElement.textContent = presidentMessages[currentMessageIndex];
+                currentMessageIndex = (currentMessageIndex + 1) % presidentMessages.length;
+
+                // Fade in
+                messageElement.style.opacity = '1';
+
+                // Schedule fade out (keep message visible longer)
+                setTimeout(() => {
+                    messageElement.style.opacity = '0';
+                }, 8000);
+
+            }, 500);
+        }
+
+        // Start president messages after 2 seconds, then every 12 seconds
+        setTimeout(() => {
+            showPresidentMessage();
+            setInterval(showPresidentMessage, 12000);
+        }, 2000);
+
+        /* BANANA BACKGROUND: cria bananas espalhadas e faz algumas brilharem periodicamente */
+        function createBananaElements(count = 18) {
+            const container = document.querySelector('.banana-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            for (let i = 0; i < count; i++) {
+                const span = document.createElement('span');
+                span.className = 'banana';
+                span.textContent = '🍌';
+
+                // posição aleatória na viewport
+                const x = Math.random() * 100; // vw
+                const y = Math.random() * 100; // vh
+                const size = 14 + Math.random() * 26; // px font-size
+                const rotate = (Math.random() * 40 - 20) + 'deg';
+                const opacity = 0.5 + Math.random() * 0.6;
+
+                span.style.left = x + 'vw';
+                span.style.top = y + 'vh';
+                span.style.fontSize = size + 'px';
+                span.style.opacity = opacity;
+                span.style.transform = `rotate(${rotate})`;
+                span.style.setProperty('--r', rotate);
+
+                container.appendChild(span);
+            }
+        }
+
+        function triggerRandomBananaGlow() {
+            const bananas = Array.from(document.querySelectorAll('.banana-container .banana'));
+            if (!bananas.length) return;
+
+            // escolha aleatória de 1 a 3 bananas para brilhar
+            const toGlow = Math.max(1, Math.floor(Math.random() * 3));
+            for (let i = 0; i < toGlow; i++) {
+                const idx = Math.floor(Math.random() * bananas.length);
+                const el = bananas[idx];
+                if (!el) continue;
+
+                // animação de brilho: adiciona classes e remove depois de um tempo
+                el.classList.add('banana-glow');
+                // ocasionalmente, aplique o efeito mais forte
+                if (Math.random() < 0.35) el.classList.add('strong');
+
+                // variação de duração
+                const hold = 900 + Math.random() * 1600;
+                el.style.opacity = 1;
+                setTimeout(() => {
+                    el.classList.remove('banana-glow');
+                    el.classList.remove('strong');
+                    el.style.opacity = 0.8 + Math.random() * 0.2;
+                }, hold);
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProjects();
+            renderProviders();
+
+            // atualizar display de saldo
+            updateBalanceUI();
+
+            // atualizar pontos patrióticos e sugestões/military
+            updatePatrioticUI();
+            renderSuggestions();
+
+            // seed bananas and start interval
+            createBananaElements(20);
+
+            // trigga frames at random intervals between 1.5s and 4.5s
+            setInterval(() => {
+                triggerRandomBananaGlow();
+            }, 1500 + Math.random() * 3000);
+        });
+
+        //audio System
+        document.addEventListener('click', function() {
+        var audio = document.getElementById('bgMusic');
+        if (audio.paused) {
+            audio.play();
             }
         });
     </script>
