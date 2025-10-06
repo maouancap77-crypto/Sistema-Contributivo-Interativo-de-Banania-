@@ -163,9 +163,12 @@
                 </div>
             </div>
         </div>
+        <button id="musicToggleBtn" class="ml-4 text-2xl text-primary hover:text-secondary" title="Música">
+              <i id="musicIcon" class="fas fa-volume-up"></i>
+        </button>
     </nav>
-    <!-- audio button -->
-    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls class="custom-audio-controls" style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio>
+    <!-- audio button 
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop controls class="custom-audio-controls" style="position:fixed;bottom:16px;right:16px;z-index:1000;"></audio> -->
 
     <!-- Main Content -->
     <!-- Banana decor layer -->
@@ -1290,12 +1293,30 @@
         });
 
         //audio System
-        document.addEventListener('click', function() {
+       /* document.addEventListener('click', function() {
         var audio = document.getElementById('bgMusic');
         if (audio.paused) {
             audio.play();
             }
-        });
+        }); */
+        document.addEventListener('DOMContentLoaded', function(){
+              const audio = document.getElementById('bgMusic');
+              const btn = document.getElementById('musicToggleBtn');
+              const icon = document.getElementById('musicIcon');
+              let isMuted = false;
+            
+              // Tenta tocar por padrão
+              audio.volume = 0.5;
+              audio.play().catch(()=>{});
+            
+              btn.addEventListener('click', function(){
+                isMuted = !isMuted;
+                audio.muted = isMuted;
+                icon.className = 'fas ' + (isMuted ? 'fa-volume-mute' : 'fa-volume-up');
+              });
+            });
     </script>
+    <audio id="bgMusic" src="https://upload.wikimedia.org/wikipedia/commons/2/24/Tico_tico_no_fub%C3%A1.ogg" loop style="display:none"></audio>
+    
 </body>
 </html>
